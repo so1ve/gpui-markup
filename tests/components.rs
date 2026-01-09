@@ -1,6 +1,6 @@
 //! Component tests for gpui-markup.
 
-use gpui::{div, px, App, IntoElement, ParentElement, RenderOnce, Styled, Window};
+use gpui::{App, IntoElement, ParentElement, RenderOnce, Styled, Window, div, px};
 use gpui_markup::ui;
 
 /// A simple header component.
