@@ -1,0 +1,169 @@
+# gpui-markup
+
+A declarative markup DSL for building [GPUI](https://gpui.rs) applications.
+
+## Installation
+
+```toml
+[dependencies]
+gpui-markup = "0.1"
+```
+
+## Usage
+
+```rust
+use gpui::prelude::*;
+use gpui_markup::ui;
+
+fn my_view(cx: &mut ViewContext<Self>) -> impl IntoElement {
+    ui! {
+        <div flex flex_col gap_2 p_4 bg={cx.theme().colors().background}>
+            <div text_size={px(24.0)} font_weight={FontWeight::BOLD}>
+                {"Hello, GPUI!"}
+            </div>
+            <div text_color={cx.theme().colors().text_muted}>
+                {"A declarative way to build UIs"}
+            </div>
+        </div>
+    }
+}
+```
+
+## Syntax
+
+### Elements
+
+```rust
+// Self-closing div
+ui! { <div/> }
+// -> div()
+
+// Div with children
+ui! { <div>{"content"}</div> }
+// -> div().child("content")
+```
+
+### Attributes
+
+```rust
+// Flag attributes (no value)
+ui! { <div flex flex_col/> }
+// -> div().flex().flex_col()
+
+// Key-value attributes
+ui! { <div w={px(200.0)} h={px(100.0)}/> }
+// -> div().w(px(200.0)).h(px(100.0))
+
+// Multi-value attributes
+ui! { <div when={condition, |d| d.bg(red())}/> }
+// -> div().when(condition, |d| d.bg(red()))
+```
+
+### Children
+
+```rust
+// Single child uses .child()
+ui! {
+    <div>
+        {"Hello"}
+    </div>
+}
+// -> div().child("Hello")
+
+// Multiple children use .children([...])
+ui! {
+    <div>
+        {"First"}
+        {"Second"}
+    </div>
+}
+// -> div().children(["First".into_any_element(), "Second".into_any_element()])
+```
+
+### Components
+
+Components used with `<Component/>` syntax must:
+1. Have a `new()` constructor
+2. Implement `IntoElement` (use `#[derive(IntoElement)]`)
+
+```rust
+#[derive(IntoElement)]
+struct Header {
+    title: SharedString,
+}
+
+impl Header {
+    fn new() -> Self {
+        Self { title: "Header".into() }
+    }
+}
+
+impl RenderOnce for Header {
+    fn render(self, _cx: &mut WindowContext) -> impl IntoElement {
+        div().child(self.title)
+    }
+}
+```
+
+Usage:
+
+```rust
+// Simple component (must be self-closing)
+ui! { <Header/> }
+// -> Header::new()
+
+// Component with configuration - use expression syntax
+ui! { <{Button::new("click me").style(ButtonStyle::Primary)}/> }
+// -> Button::new("click me").style(ButtonStyle::Primary)
+```
+
+### Expression Tags
+
+For elements that need method chains or complex initialization:
+
+```rust
+// Self-closing expression
+ui! { <{icon.clone()}/> }
+// -> icon.clone()
+
+// Expression with attributes and children
+ui! {
+    <{Container::new()} flex p_4>
+        {"Content"}
+    </{}>
+}
+// -> Container::new().flex().p_4().child("Content")
+```
+
+### Nested Structures
+
+```rust
+ui! {
+    <div flex flex_col gap_4>
+        <div flex justify_between>
+            <{Label::new("Title")}/>
+            <{Button::new("Action")}/>
+        </div>
+        <div flex_1 overflow_hidden>
+            <{ScrollView::new(content)}/>
+        </div>
+    </div>
+}
+```
+
+## How It Works
+
+The `ui!` macro transforms the JSX-like syntax into GPUI's builder pattern at compile time:
+
+| Markup | Generated Code |
+|--------|----------------|
+| `<div/>` | `div()` |
+| `<div flex/>` | `div().flex()` |
+| `<div w={x}/>` | `div().w(x)` |
+| `<div when={a, b}/>` | `div().when(a, b)` |
+| `<Foo/>` | `Foo::new()` |
+| `<{expr}/>` | `expr` |
+
+## License
+
+[MIT](./LICENSE). Made with ❤️ by [Ray](https://github.com/so1ve)
