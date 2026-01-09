@@ -1,0 +1,31 @@
+name: autofix.ci
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  autofix:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Rust
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          components: rustfmt
+
+      - name: Rust Cache
+        uses: Swatinem/rust-cache@v2
+
+      - name: Run cargo fmt
+        run: cargo fmt --manifest-path src-tauri/Cargo.toml
+
+      - uses: autofix-ci/action@635ffb0c9798bd160680f18fd73371e355b85f27
+        with:
+          commit-message: "chore: apply automatic fixes"
