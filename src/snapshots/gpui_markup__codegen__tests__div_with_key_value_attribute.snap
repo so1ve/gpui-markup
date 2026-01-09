@@ -1,0 +1,5 @@
+---
+source: src/codegen.rs
+expression: "generate(quote::quote! { <div w={px(200.0)}/> })"
+---
+div () . w (px (200.0))

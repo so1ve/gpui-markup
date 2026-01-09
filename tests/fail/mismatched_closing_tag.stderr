@@ -1,0 +1,5 @@
+error: Mismatched closing tag. Expected </div>, found </span>
+ --> tests/fail/mismatched_closing_tag.rs:7:11
+  |
+7 |         </span>
+  |           ^^^^

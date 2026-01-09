@@ -1,0 +1,5 @@
+---
+source: src/codegen.rs
+expression: "generate(quote::quote! { <div flex flex_col/> })"
+---
+div () . flex () . flex_col ()

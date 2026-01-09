@@ -1,0 +1,5 @@
+---
+source: src/codegen.rs
+expression: "generate(quote::quote! { <Header/> })"
+---
+Header :: new ()

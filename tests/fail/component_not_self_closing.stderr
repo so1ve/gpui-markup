@@ -1,0 +1,5 @@
+error: Components must be self-closing: <Header/>. For components with children, use expression syntax: <{Header::new(...)}>
+ --> tests/fail/component_not_self_closing.rs:6:10
+  |
+6 |         <Header>
+  |          ^^^^^^

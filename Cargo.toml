@@ -1,0 +1,26 @@
+[package]
+name = "gpui-markup"
+version = "0.1.0"
+edition = "2024"
+authors = ["Ray <i@mk1.io>"]
+license = "MIT"
+description = "A declarative markup DSL for building GPUI applications"
+
+[lib]
+proc-macro = true
+
+[dependencies]
+syn = { version = "2", features = ["full", "parsing", "extra-traits"] }
+quote = "1"
+proc-macro2 = "1"
+proc-macro-error2 = "2"
+
+[dev-dependencies]
+trybuild = "1"
+gpui = "0.2.2"
+insta = "1"
+
+[lints.clippy]
+all = "warn"
+pedantic = "warn"
+nursery = "warn"

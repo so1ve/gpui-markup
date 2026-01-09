@@ -1,0 +1,5 @@
+---
+source: src/codegen.rs
+expression: "generate(quote::quote!\n{ <div> <div>{\"First\"}</div> <div>{\"Second\"}</div> </div> })"
+---
+div () . children ([(div () . child ("First")) . into_any_element () , (div () . child ("Second")) . into_any_element ()])

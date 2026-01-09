@@ -1,0 +1,5 @@
+---
+source: src/codegen.rs
+expression: "generate(quote::quote!\n{\n    <div flex flex_col> <div text_size={px(16.0)}> {\"Hello World\"} </div> <div\n    bg={theme.secondary}> <Header/> </div> </div>\n})"
+---
+div () . flex () . flex_col () . children ([(div () . text_size (px (16.0)) . child ("Hello World")) . into_any_element () , (div () . bg (theme . secondary) . child (Header :: new ())) . into_any_element ()])

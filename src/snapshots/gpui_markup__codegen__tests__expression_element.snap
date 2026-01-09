@@ -1,0 +1,5 @@
+---
+source: src/codegen.rs
+expression: "generate(quote::quote! { <{Container::new(title)}/> })"
+---
+Container :: new (title)

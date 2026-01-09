@@ -1,0 +1,5 @@
+error: Expected a child element `<...>` or expression `{...}`
+ --> tests/fail/invalid_child.rs:6:13
+  |
+6 |             foo
+  |             ^^^

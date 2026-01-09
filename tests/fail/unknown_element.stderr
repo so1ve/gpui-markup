@@ -1,0 +1,5 @@
+error: Unknown element 'span'. Use 'div' for native elements or PascalCase for components.
+ --> tests/fail/unknown_element.rs:5:20
+  |
+5 |     let _ = ui! { <span/> };
+  |                    ^^^^
