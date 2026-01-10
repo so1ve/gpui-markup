@@ -8,25 +8,6 @@ use crate::ast::{
     NativeElement,
 };
 
-fn native_element_type(name: &str) -> &'static str {
-    match name {
-        "div" => "Div",
-        "svg" => "Svg",
-        "anchored" => "Anchored",
-        _ => unreachable!("Unknown native element: {name}"),
-    }
-}
-
-fn wrap_with_parent_check(output: &TokenStream, type_path: &TokenStream) -> TokenStream {
-    quote! {
-        {
-            fn __assert_parent_element<T: gpui::ParentElement>() {}
-            __assert_parent_element::<#type_path>();
-            #output
-        }
-    }
-}
-
 impl ToTokens for Markup {
     fn to_tokens(&self, tokens: &mut TokenStream) {
         self.element.to_tokens(tokens);
@@ -50,12 +31,7 @@ impl ToTokens for NativeElement {
         let mut output = quote! { #name() };
 
         output = append_attributes(output, &self.attributes);
-
-        if !self.children.is_empty() {
-            let type_name = quote::format_ident!("{}", native_element_type(&self.name.to_string()));
-            output = wrap_with_parent_check(&output, &quote! { gpui::#type_name });
-            output = append_children(output, &self.children);
-        }
+        output = append_children(output, &self.children);
 
         tokens.extend(output);
     }

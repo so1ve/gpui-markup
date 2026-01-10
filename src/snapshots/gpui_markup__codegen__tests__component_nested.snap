@@ -1,13 +1,7 @@
 ---
 source: src/codegen.rs
-expression: "generate(quote::quote! { div { Header [flex], Footer {}, } })"
+expression: "generate(quote::quote! { div { Header [flex] {}, Footer {}, } })"
 ---
 fn __wrapper() {
-    {
-        fn __assert_parent_element<T: gpui::ParentElement>() {}
-        __assert_parent_element::<gpui::Div>();
-        div()
-    }
-        .child(Header::new().flex())
-        .child(Footer::new())
+    div().child(Header::new().flex()).child(Footer::new())
 }

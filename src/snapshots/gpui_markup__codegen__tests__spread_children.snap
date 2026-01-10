@@ -3,10 +3,5 @@ source: src/codegen.rs
 expression: "generate(quote::quote! { div { ..items, } })"
 ---
 fn __wrapper() {
-    {
-        fn __assert_parent_element<T: gpui::ParentElement>() {}
-        __assert_parent_element::<gpui::Div>();
-        div()
-    }
-        .children(items)
+    div().children(items)
 }

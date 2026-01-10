@@ -3,17 +3,5 @@ source: src/codegen.rs
 expression: "generate(quote::quote!\n{ anchored [position: Point::default()] { div { \"Tooltip\" }, } })"
 ---
 fn __wrapper() {
-    {
-        fn __assert_parent_element<T: gpui::ParentElement>() {}
-        __assert_parent_element::<gpui::Anchored>();
-        anchored().position(Point::default())
-    }
-        .child(
-            {
-                fn __assert_parent_element<T: gpui::ParentElement>() {}
-                __assert_parent_element::<gpui::Div>();
-                div()
-            }
-                .child("Tooltip"),
-        )
+    anchored().position(Point::default()).child(div().child("Tooltip"))
 }
