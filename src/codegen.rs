@@ -127,13 +127,8 @@ impl ToTokens for ComponentElement {
 impl ToTokens for ExprElement {
     fn to_tokens(&self, tokens: &mut TokenStream) {
         let expr = &self.expr;
-
-        let mut output = quote! { #expr };
-
-        output = append_attributes(output, &self.attributes);
-
+        let mut output = append_attributes(quote! { #expr }, &self.attributes);
         output = append_children(output, &self.children);
-
         tokens.extend(output);
     }
 }

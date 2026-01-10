@@ -57,46 +57,50 @@ fn is_component_name(name: &str) -> bool {
     name.chars().next().is_some_and(|c| c.is_ascii_uppercase())
 }
 
-fn parse_native_element(input: ParseStream, open_name: Ident) -> Result<Element> {
-    let tag_name = open_name.to_string();
-    let attributes = parse_attributes(input)?;
-
-    // Check for self-closing or opening tag
+/// Parse element body (self-closing or with children and closing tag).
+/// Returns `(children, close_name)` where `close_name` is `None` for
+/// self-closing tags.
+fn parse_element_body(
+    input: ParseStream,
+    expected_close_name: &str,
+) -> Result<(Vec<Child>, Option<Ident>)> {
     if input.peek(Token![/]) {
         // Self-closing: <tag .../>
         input.parse::<Token![/]>()?;
         input.parse::<Token![>]>()?;
-        return Ok(Element::Native(NativeElement {
-            open_name,
-            close_name: None,
-            attributes,
-            children: vec![],
-        }));
+        return Ok((vec![], None));
     }
 
     // Opening tag: <tag ...>
     input.parse::<Token![>]>()?;
 
-    // Parse children
     let children = parse_children(input)?;
 
     // Closing tag: </tag>
     input.parse::<Token![<]>()?;
     input.parse::<Token![/]>()?;
     let closing_ident = input.call(Ident::parse_any)?;
-    if closing_ident != tag_name {
+    if closing_ident != expected_close_name {
         abort!(
             closing_ident.span(),
             "Mismatched closing tag. Expected </{}>, found </{}>",
-            tag_name,
+            expected_close_name,
             closing_ident
         );
     }
     input.parse::<Token![>]>()?;
 
+    Ok((children, Some(closing_ident)))
+}
+
+fn parse_native_element(input: ParseStream, open_name: Ident) -> Result<Element> {
+    let tag_name = open_name.to_string();
+    let attributes = parse_attributes(input)?;
+    let (children, close_name) = parse_element_body(input, &tag_name)?;
+
     Ok(Element::Native(NativeElement {
         open_name,
-        close_name: Some(closing_ident),
+        close_name,
         attributes,
         children,
     }))
@@ -142,55 +146,24 @@ fn parse_deferred_element(input: ParseStream, open_name: Ident) -> Result<Elemen
 
 /// Parse a component element: `<Foo/>` or `<Foo>...</Foo>`
 fn parse_component_element(input: ParseStream, open_name: Ident) -> Result<Element> {
-    // Check for self-closing or opening tag
-    if input.peek(Token![/]) {
-        // Self-closing: <Component/>
-        input.parse::<Token![/]>()?;
-        input.parse::<Token![>]>()?;
-        return Ok(Element::Component(ComponentElement {
-            open_name,
-            close_name: None,
-            children: vec![],
-        }));
-    }
-
-    // Opening tag: <Component>
-    input.parse::<Token![>]>()?;
-
-    // Parse children
-    let children = parse_children(input)?;
-
-    // Closing tag: </Component>
-    input.parse::<Token![<]>()?;
-    input.parse::<Token![/]>()?;
-    let closing_ident = input.call(Ident::parse_any)?;
-    if closing_ident != open_name {
-        abort!(
-            closing_ident.span(),
-            "Mismatched closing tag. Expected </{}>, found </{}>",
-            open_name,
-            closing_ident
-        );
-    }
-    input.parse::<Token![>]>()?;
+    let tag_name = open_name.to_string();
+    let (children, close_name) = parse_element_body(input, &tag_name)?;
 
     Ok(Element::Component(ComponentElement {
         open_name,
-        close_name: Some(closing_ident),
+        close_name,
         children,
     }))
 }
 
 /// Parse an expression element: `<{expr}/>` or `<{expr} ...>...</{}>`
 fn parse_expression_element(input: ParseStream) -> Result<Element> {
-    // Parse {expr}
     let content;
     braced!(content in input);
     let expr: Expr = content.parse()?;
 
     let attributes = parse_attributes(input)?;
 
-    // Check for self-closing or opening tag
     if input.peek(Token![/]) {
         // Self-closing: <{expr}/>
         input.parse::<Token![/]>()?;
@@ -212,7 +185,6 @@ fn parse_expression_element(input: ParseStream) -> Result<Element> {
     input.parse::<Token![/]>()?;
     let closing_content;
     braced!(closing_content in input);
-    // The closing brace should be empty
     if !closing_content.is_empty() {
         abort!(
             closing_content.span(),
@@ -244,26 +216,24 @@ fn parse_attributes(input: ParseStream) -> Result<Vec<Attribute>> {
 fn parse_attribute(input: ParseStream) -> Result<Attribute> {
     let key = input.call(Ident::parse_any)?;
 
-    if input.peek(Token![=]) {
-        input.parse::<Token![=]>()?;
-        let content;
-        braced!(content in input);
-
-        // Parse comma-separated expressions
-        let mut values: Vec<Expr> = Vec::new();
-        values.push(content.parse()?);
-
-        while content.peek(Token![,]) {
-            content.parse::<Token![,]>()?;
-            if !content.is_empty() {
-                values.push(content.parse()?);
-            }
-        }
-
-        Ok(Attribute::KeyValue { key, values })
-    } else {
-        Ok(Attribute::Flag(key))
+    if !input.peek(Token![=]) {
+        return Ok(Attribute::Flag(key));
     }
+
+    input.parse::<Token![=]>()?;
+    let content;
+    braced!(content in input);
+
+    // Parse comma-separated expressions
+    let mut values = vec![content.parse()?];
+    while content.peek(Token![,]) {
+        content.parse::<Token![,]>()?;
+        if !content.is_empty() {
+            values.push(content.parse()?);
+        }
+    }
+
+    Ok(Attribute::KeyValue { key, values })
 }
 
 /// Parse children until we hit a closing tag `</`
