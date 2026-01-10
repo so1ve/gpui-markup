@@ -204,10 +204,7 @@ fn test_nested_ui_macro_with_variable() {
 
 #[test]
 fn test_nested_ui_macro_in_spread() {
-    let items = vec![
-        ui! { div { "A" } },
-        ui! { div { "B" } },
-    ];
+    let items = vec![ui! { div { "A" } }, ui! { div { "B" } }];
     let _ = ui! {
         div {
             ..items,
