@@ -110,7 +110,15 @@ fn parse_deferred_element(input: ParseStream, open_name: Ident) -> Result<Elemen
     // Opening tag: <deferred>
     input.parse::<Token![>]>()?;
 
-    let child = parse_child(input)?;
+    // Skip comments until we find actual content
+    let mut child = None;
+    while child.is_none() && !is_closing_tag(input) {
+        child = parse_child(input)?;
+    }
+
+    let Some(child) = child else {
+        abort!(open_name.span(), "<deferred> must have exactly one child");
+    };
 
     // Closing tag: </deferred>
     input.parse::<Token![<]>()?;
@@ -262,8 +270,9 @@ fn parse_children(input: ParseStream) -> Result<Vec<Child>> {
     let mut children = Vec::new();
 
     while !is_closing_tag(input) {
-        let child = parse_child(input)?;
-        children.push(child);
+        if let Some(child) = parse_child(input)? {
+            children.push(child);
+        }
     }
 
     Ok(children)
@@ -274,18 +283,24 @@ fn is_closing_tag(input: ParseStream) -> bool {
     input.peek(Token![<]) && input.peek2(Token![/])
 }
 
-/// Parse a single child: `{expr}` or nested element
-fn parse_child(input: ParseStream) -> Result<Child> {
+/// Parse a single child: `{expr}`, `{/* comment */}` (skipped), or nested
+/// element
+fn parse_child(input: ParseStream) -> Result<Option<Child>> {
     if input.peek(Token![<]) {
         // Nested element
         let element = input.parse::<Element>()?;
-        Ok(Child::Element(element))
+        Ok(Some(Child::Element(element)))
     } else if input.peek(Brace) {
-        // Expression child
+        // Expression child or comment
         let content;
         braced!(content in input);
-        let expr: Expr = content.parse()?;
-        Ok(Child::Expression(expr))
+        // Empty braces `{}` are treated as comments (from `{/* ... */}`)
+        if content.is_empty() {
+            Ok(None)
+        } else {
+            let expr: Expr = content.parse()?;
+            Ok(Some(Child::Expression(expr)))
+        }
     } else {
         abort!(
             input.span(),

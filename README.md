@@ -102,6 +102,20 @@ ui! {
 // -> div().children(["First".into_any_element(), "Second".into_any_element()])
 ```
 
+### Comments
+
+Use `{/* ... */}` for JSX-style comments:
+
+```rust
+ui! {
+    <div>
+        {/* This comment will be ignored */}
+        {"Visible content"}
+    </div>
+}
+// -> div().child("Visible content")
+```
+
 ### Components
 
 Components used with `<Component/>` syntax must:
