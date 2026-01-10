@@ -1,4 +1,4 @@
-error: expression element requires braces: `expr {{ }}`
+error: expression element requires braces: `expr { }`
  --> tests/fail/empty_expression_tag.rs:5:19
   |
 5 |     let _ = ui! { Button::new() };
