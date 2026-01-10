@@ -1,0 +1,5 @@
+error: unexpected end of input, expected parentheses
+ --> tests/fail/invalid_method_call.rs:7:19
+  |
+7 |             {.flex}
+  |                   ^
