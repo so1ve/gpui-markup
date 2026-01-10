@@ -22,6 +22,8 @@ pub enum Element {
 /// A native div element
 #[derive(Debug)]
 pub struct DivElement {
+    pub open_name: Ident,
+    pub close_name: Option<Ident>,
     pub attributes: Vec<Attribute>,
     pub children: Vec<Child>,
 }

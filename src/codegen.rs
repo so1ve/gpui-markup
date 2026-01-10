@@ -23,10 +23,22 @@ impl ToTokens for Element {
 
 impl ToTokens for DivElement {
     fn to_tokens(&self, tokens: &mut TokenStream) {
-        let mut output = quote! { div() };
+        let open_name = &self.open_name;
+
+        let mut output = self.close_name.as_ref().map_or_else(
+            || quote! { #open_name() },
+            |close_name| {
+                quote! {
+                    {
+                        #[allow(path_statements)]
+                        #open_name;
+                        #close_name()
+                    }
+                }
+            },
+        );
 
         output = append_attributes(output, &self.attributes);
-
         output = append_children(output, &self.children);
 
         tokens.extend(output);

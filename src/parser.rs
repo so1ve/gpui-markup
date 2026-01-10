@@ -29,7 +29,7 @@ impl Parse for Element {
             let name = ident.to_string();
 
             if name == "div" {
-                parse_div_element(input)
+                parse_div_element(input, ident)
             } else if is_component_name(&name) {
                 parse_component_element(input, ident)
             } else {
@@ -48,7 +48,7 @@ fn is_component_name(name: &str) -> bool {
     name.chars().next().is_some_and(|c| c.is_ascii_uppercase())
 }
 
-fn parse_div_element(input: ParseStream) -> Result<Element> {
+fn parse_div_element(input: ParseStream, open_name: Ident) -> Result<Element> {
     let attributes = parse_attributes(input)?;
 
     // Check for self-closing or opening tag
@@ -57,6 +57,8 @@ fn parse_div_element(input: ParseStream) -> Result<Element> {
         input.parse::<Token![/]>()?;
         input.parse::<Token![>]>()?;
         return Ok(Element::Div(DivElement {
+            open_name,
+            close_name: None,
             attributes,
             children: vec![],
         }));
@@ -82,6 +84,8 @@ fn parse_div_element(input: ParseStream) -> Result<Element> {
     input.parse::<Token![>]>()?;
 
     Ok(Element::Div(DivElement {
+        open_name,
+        close_name: Some(closing_ident),
         attributes,
         children,
     }))
