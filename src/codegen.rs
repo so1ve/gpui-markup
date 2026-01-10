@@ -171,18 +171,18 @@ mod tests {
 
     #[test]
     fn test_expression_element() {
-        assert_snapshot!(generate(quote::quote! { (Container::new(title)) }));
+        assert_snapshot!(generate(quote::quote! { Container::new(title) {} }));
     }
 
     #[test]
     fn test_expression_element_with_attributes() {
-        assert_snapshot!(generate(quote::quote! { (Container::new(title)) { [flex] } }));
+        assert_snapshot!(generate(quote::quote! { Container::new(title) { [flex] } }));
     }
 
     #[test]
     fn test_expression_element_with_children() {
         assert_snapshot!(generate(
-            quote::quote! { (Container::new(title)) { "Content" } }
+            quote::quote! { Container::new(title) { "Content" } }
         ));
     }
 
@@ -305,7 +305,9 @@ mod tests {
 
     #[test]
     fn test_component_with_attrs() {
-        assert_snapshot!(generate(quote::quote! { Header { [flex, style: Primary] } }));
+        assert_snapshot!(generate(
+            quote::quote! { Header { [flex, style: Primary] } }
+        ));
     }
 
     #[test]

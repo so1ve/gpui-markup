@@ -110,16 +110,21 @@ use crate::ast::Markup;
 ///
 /// ## Expression Elements
 ///
-/// Any expression can be used as an element:
+/// Any expression can be used as an element (braces required):
 ///
 /// ```ignore
-/// ui! { (Header::new()) }                              // -> Header::new()
-/// ui! { (Button::new("Click")) { [style: Primary] } }  // -> Button::new("Click").style(Primary)
+/// ui! { Button::new("Click") {} }              // -> Button::new("Click")
+/// ui! { Button::new("Click") { [style: Primary] } }
+///                                              // -> Button::new("Click").style(Primary)
 /// ui! {
-///     (Container::new()) { [flex]
+///     div().flex() { [flex_col]
 ///         "Content",
 ///     }
 /// }
+/// // -> div().flex().flex_col().child("Content")
+///
+/// // Parentheses for complex expressions (braces optional)
+/// ui! { (a + b) }                              // -> a + b
 /// ```
 ///
 /// ## Multi-value Attributes

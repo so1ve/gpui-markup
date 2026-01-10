@@ -1,19 +1,21 @@
 //! Parser for gpui-markup DSL.
 //!
 //! Syntax:
-//! - `div { [flex, w: px(200.0)] "Content", child }` - native element with attrs
+//! - `div { [flex, w: px(200.0)] "Content", child }` - native element with
+//!   attrs
 //! - `div { "Content" }` - no attributes
 //! - `div {}` - minimal
 //! - `deferred { child }` - deferred element
-//! - `(Button::new("Hi")) { [style: Primary] }` - expression element (wrapped in
-//!   parens)
+//! - `Button::new("Hi") { [style: Primary] }` - expression element
+//! - `(complex + expr) { [style: Primary] }` - parenthesized expression element
 
 use proc_macro_error2::abort;
 use proc_macro2::TokenStream;
 use syn::ext::IdentExt;
 use syn::parse::{Parse, ParseStream};
+use syn::spanned::Spanned;
 use syn::token::{Brace, Bracket, Paren};
-use syn::{Expr, Ident, Result, Token, braced, bracketed, parenthesized};
+use syn::{Expr, Ident, Result, Token, braced, bracketed};
 
 use crate::ast::{
     Attribute, Child, ComponentElement, DeferredElement, Element, ExprElement, Markup,
@@ -32,27 +34,66 @@ impl Parse for Markup {
 
 /// Parse an element at the top level or as a child.
 fn parse_element(input: ParseStream) -> Result<Element> {
-    if input.peek(Paren) {
-        // (expr) [...] {...} - expression element
-        parse_paren_expression_element(input)
-    } else if input.peek(Ident::peek_any) {
-        let ident = input.call(Ident::parse_any)?;
+    // Try identifier-based elements first
+    if input.peek(Ident::peek_any) {
+        // Fork to look ahead without consuming
+        let fork = input.fork();
+        let ident = fork.call(Ident::parse_any)?;
         let name = ident.to_string();
 
-        if name == "deferred" {
-            parse_deferred_element(input, ident)
-        } else if NATIVE_ELEMENTS.contains(&name.as_str()) {
-            parse_native_element(input, ident)
-        } else {
-            // Component element: Header, Button, etc.
-            parse_component_element(input, ident)
+        // Only treat as special element if directly followed by {}
+        // This allows `div().flex() {}` to be an expression element
+        if fork.peek(Brace) {
+            // Special elements: deferred
+            if name == "deferred" {
+                let ident = input.call(Ident::parse_any)?;
+                return parse_deferred_element(input, ident);
+            }
+
+            // Native elements: div, svg, anchored
+            if NATIVE_ELEMENTS.contains(&name.as_str()) {
+                let ident = input.call(Ident::parse_any)?;
+                return parse_native_element(input, ident);
+            }
+
+            // Component: any other identifier directly followed by {}
+            let ident = input.call(Ident::parse_any)?;
+            return parse_component_element(input, ident);
         }
-    } else {
+
+        // Otherwise: expression element (e.g., Button::new() {}, div().flex() {})
+        return parse_expression_element(input, true);
+    }
+
+    // Parenthesized expression: braces optional for backwards compatibility
+    if input.peek(Paren) {
+        return parse_expression_element(input, false);
+    }
+
+    abort!(
+        input.span(),
+        "Expected element: native element (div, svg, etc.), component, or expression"
+    );
+}
+
+/// Parse an expression element: `expr { [attrs] children }` or `(expr) {
+/// [attrs] children }`
+fn parse_expression_element(input: ParseStream, require_braces: bool) -> Result<Element> {
+    let expr: Expr = input.parse()?;
+
+    if require_braces && !input.peek(Brace) {
         abort!(
-            input.span(),
-            "Expected element: native element (div, svg, etc.), component, or parenthesized expression ((expr))"
+            expr.span(),
+            "expression element requires braces: `expr {{ }}`"
         );
     }
+
+    let (attributes, children) = parse_optional_children(input)?;
+    Ok(Element::Expression(ExprElement {
+        expr,
+        attributes,
+        children,
+    }))
 }
 
 /// Parse a native element: `div { [attrs] children }`
@@ -104,21 +145,6 @@ fn parse_deferred_element(input: ParseStream, name: Ident) -> Result<Element> {
     Ok(Element::Deferred(DeferredElement {
         name,
         child: Box::new(child),
-    }))
-}
-
-/// Parse an expression element wrapped in parens: `(expr) { [attrs] children }`
-fn parse_paren_expression_element(input: ParseStream) -> Result<Element> {
-    let content;
-    parenthesized!(content in input);
-    let expr: Expr = content.parse()?;
-
-    let (attributes, children) = parse_optional_children(input)?;
-
-    Ok(Element::Expression(ExprElement {
-        expr,
-        attributes,
-        children,
     }))
 }
 
@@ -176,7 +202,10 @@ fn parse_optional_children(input: ParseStream) -> Result<(Vec<Attribute>, Vec<Ch
 }
 
 /// Parse required children in `{ [attrs] ... }` - braces are mandatory
-fn parse_required_children(input: ParseStream, name: &Ident) -> Result<(Vec<Attribute>, Vec<Child>)> {
+fn parse_required_children(
+    input: ParseStream,
+    name: &Ident,
+) -> Result<(Vec<Attribute>, Vec<Child>)> {
     if !input.peek(Brace) {
         abort!(
             name.span(),
@@ -229,56 +258,40 @@ fn parse_child(input: ParseStream) -> Result<Child> {
     }
 
     // Element: native, deferred, or component
-    // With required braces, detection is cleaner:
-    // - Native/deferred with {...} -> element (will error if braces missing)
-    // - Component with {...} -> element
-    // - identifier alone or identifier[expr] without {} -> expression
+    // Only if identifier directly followed by {}
     if input.peek(Ident::peek_any) {
         let fork = input.fork();
         let ident = fork.call(Ident::parse_any)?;
         let name = ident.to_string();
 
-        // Native/deferred: always parse as element (will error if braces missing)
-        if name == "deferred" || NATIVE_ELEMENTS.contains(&name.as_str()) {
-            let element = parse_element(input)?;
-            return Ok(Child::Element(element));
-        }
-
-        // Component: check if it has braces
+        // Only treat as element if directly followed by {}
         if fork.peek(Brace) {
-            // `Header {...}` - element
-            let element = parse_element(input)?;
-            return Ok(Child::Element(element));
+            // Native/deferred/component: parse as element
+            if name == "deferred"
+                || NATIVE_ELEMENTS.contains(&name.as_str())
+                || name.chars().next().is_some_and(char::is_uppercase)
+            {
+                let element = parse_element(input)?;
+                return Ok(Child::Element(element));
+            }
         }
-        // Otherwise fall through to expression (e.g., `items[0]`, `SomeIdent`)
+        // Otherwise fall through to expression parsing
     }
 
-    // Parenthesized: could be expression element or just grouped expression
-    if input.peek(Paren) {
-        let content;
-        parenthesized!(content in input);
-        let expr: Expr = content.parse()?;
+    // Expression (possibly followed by {} for expression element)
+    let expr: Expr = input.parse()?;
 
-        // If followed by {...}, it's an expression element
-        if input.peek(Brace) {
-            let (attributes, children) = parse_optional_children(input)?;
-            return Ok(Child::Element(Element::Expression(ExprElement {
-                expr,
-                attributes,
-                children,
-            })));
-        }
-
-        // Otherwise it's just a parenthesized expression
-        return Ok(Child::Expression(Expr::Paren(syn::ExprParen {
-            attrs: vec![],
-            paren_token: syn::token::Paren::default(),
-            expr: Box::new(expr),
+    // If followed by {...}, it's an expression element
+    if input.peek(Brace) {
+        let (attributes, children) = parse_optional_children(input)?;
+        return Ok(Child::Element(Element::Expression(ExprElement {
+            expr,
+            attributes,
+            children,
         })));
     }
 
-    // Simple expression
-    let expr: Expr = input.parse()?;
+    // Otherwise it's just an expression
     Ok(Child::Expression(expr))
 }
 
@@ -374,7 +387,7 @@ mod tests {
     #[test]
     fn test_parse_expression_element() {
         let input: proc_macro2::TokenStream = quote::quote! {
-            (Container::new(title))
+            Container::new(title) {}
         };
         let markup: Markup = syn::parse2(input).unwrap();
         assert!(matches!(markup.element, Element::Expression(_)));
@@ -383,7 +396,7 @@ mod tests {
     #[test]
     fn test_parse_expression_element_with_attrs() {
         let input: proc_macro2::TokenStream = quote::quote! {
-            (Button::new("Click")) { [style: Primary] }
+            Button::new("Click") { [style: Primary] }
         };
         let markup: Markup = syn::parse2(input).unwrap();
         if let Element::Expression(el) = markup.element {
@@ -470,7 +483,7 @@ mod tests {
     fn test_parse_paren_child_with_attrs() {
         let input: proc_macro2::TokenStream = quote::quote! {
             div {
-                (Button::new()) { [flex] },
+                Button::new() { [flex] },
             }
         };
         let markup: Markup = syn::parse2(input).unwrap();

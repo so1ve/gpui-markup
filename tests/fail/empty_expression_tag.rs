@@ -1,6 +1,6 @@
 use gpui_markup::ui;
 
 fn main() {
-    // Should fail: empty expression in parentheses
-    let _ = ui! { () };
+    // Should fail: expression without braces at top level
+    let _ = ui! { Button::new() };
 }
