@@ -7,6 +7,32 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.4.0](https://github.com/so1ve/gpui-markup/compare/v0.3.0...v0.4.0) - 2026-01-10
+
+### Added
+
+- support component expressions
+- [**breaking**] move `[]` into `{}`
+- [**breaking**] refined markup syntax
+
+### Fixed
+
+- remove duplicated braces in error message
+
+### Other
+
+- update snapshot
+- use nightly rust
+- update code formatting
+- update README
+- apply automatic fixes
+- remove `__assert_parent_element` guard
+- add nested `ui!` calls
+- apply automatic fixes
+- add comments for `parse_method_chain`
+- extract `parse_element_body` and early returns
+- bump version
+
 ## [0.3.0](https://github.com/so1ve/gpui-markup/compare/v0.2.0...v0.3.0) - 2026-01-10
 
 ### Added
