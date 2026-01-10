@@ -1,0 +1,5 @@
+error: Empty braces are not allowed. Use // for comments.
+ --> tests/fail/empty_braces.rs:7:14
+  |
+7 |             {}
+  |              ^

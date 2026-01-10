@@ -138,14 +138,3 @@ fn test_deferred() {
         </deferred>
     };
 }
-
-#[test]
-fn test_comments() {
-    let _ = ui! {
-        <div>
-            {/* This is a comment */}
-            {"visible"}
-            {/* Another comment */}
-        </div>
-    };
-}

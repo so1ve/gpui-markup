@@ -104,6 +104,10 @@ use crate::ast::Markup;
 /// }
 /// ```
 ///
+/// ## Comments
+///
+/// Use standard Rust comments (`//` or `/* */`) inside `ui!`.
+///
 /// ## Components
 ///
 /// ```ignore

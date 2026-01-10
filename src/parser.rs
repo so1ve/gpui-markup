@@ -285,19 +285,21 @@ fn is_closing_tag(input: ParseStream) -> bool {
 }
 
 /// Parse a single child: `{expr}`, `{..expr}` (spread), `{.method(...)}`
-/// (method chain), `{/* comment */}` (skipped), or nested element
+/// (method chain), or nested element
 fn parse_child(input: ParseStream) -> Result<Option<Child>> {
     if input.peek(Token![<]) {
         // Nested element
         let element = input.parse::<Element>()?;
         Ok(Some(Child::Element(element)))
     } else if input.peek(Brace) {
-        // Expression child, spread, method chain, or comment
+        // Expression child, spread, or method chain
         let content;
         braced!(content in input);
-        // Empty braces `{}` are treated as comments (from `{/* ... */}`)
         if content.is_empty() {
-            Ok(None)
+            abort!(
+                content.span(),
+                "Empty braces are not allowed. Use // for comments."
+            );
         } else if content.peek(Token![..]) {
             // Spread expression: {..expr}
             content.parse::<Token![..]>()?;

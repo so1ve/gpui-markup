@@ -139,13 +139,15 @@ This gives you full control over method call order.
 
 ### Comments
 
-Use `{/* ... */}` for JSX-style comments:
+Use standard Rust comments inside `ui!`:
 
 ```rust
 ui! {
     <div>
-        {/* This comment will be ignored */}
+        // This is a comment
         {"Visible content"}
+        /* Multi-line
+           comment */
     </div>
 }
 // -> div().child("Visible content")
