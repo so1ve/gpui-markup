@@ -31,7 +31,9 @@ pub struct NativeElement {
 /// A component element (`PascalCase` identifier).
 #[derive(Debug)]
 pub struct ComponentElement {
-    pub name: Ident,
+    pub open_name: Ident,
+    pub close_name: Option<Ident>,
+    pub children: Vec<Child>,
 }
 
 /// An expression used as a tag.

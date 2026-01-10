@@ -47,8 +47,23 @@ impl ToTokens for NativeElement {
 
 impl ToTokens for ComponentElement {
     fn to_tokens(&self, tokens: &mut TokenStream) {
-        let name = &self.name;
-        let output = quote! { #name::new() };
+        let open_name = &self.open_name;
+
+        let mut output = self.close_name.as_ref().map_or_else(
+            || quote! { #open_name::new() },
+            |close_name| {
+                quote! {
+                    {
+                        #[allow(path_statements)]
+                        #open_name;
+                        #close_name::new()
+                    }
+                }
+            },
+        );
+
+        output = append_children(output, &self.children);
+
         tokens.extend(output);
     }
 }
@@ -171,6 +186,15 @@ mod tests {
     #[test]
     fn test_component() {
         assert_snapshot!(generate(quote::quote! { <Header/> }));
+    }
+
+    #[test]
+    fn test_component_with_children() {
+        assert_snapshot!(generate(quote::quote! {
+            <Container>
+                <div>{"Content"}</div>
+            </Container>
+        }));
     }
 
     #[test]

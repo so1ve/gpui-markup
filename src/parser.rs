@@ -96,22 +96,45 @@ fn parse_native_element(input: ParseStream, open_name: Ident) -> Result<Element>
     }))
 }
 
-/// Parse a component element: `<Foo/>` (only self-closing for now)
-fn parse_component_element(input: ParseStream, name: Ident) -> Result<Element> {
-    // Components must be self-closing
-    if !input.peek(Token![/]) {
-        abort!(
-            name.span(),
-            "Components must be self-closing: <{}/>. For components with children, use expression syntax: <{{{}::new(...)}}>",
-            name,
-            name
-        );
+/// Parse a component element: `<Foo/>` or `<Foo>...</Foo>`
+fn parse_component_element(input: ParseStream, open_name: Ident) -> Result<Element> {
+    // Check for self-closing or opening tag
+    if input.peek(Token![/]) {
+        // Self-closing: <Component/>
+        input.parse::<Token![/]>()?;
+        input.parse::<Token![>]>()?;
+        return Ok(Element::Component(ComponentElement {
+            open_name,
+            close_name: None,
+            children: vec![],
+        }));
     }
 
-    input.parse::<Token![/]>()?;
+    // Opening tag: <Component>
     input.parse::<Token![>]>()?;
 
-    Ok(Element::Component(ComponentElement { name }))
+    // Parse children
+    let children = parse_children(input)?;
+
+    // Closing tag: </Component>
+    input.parse::<Token![<]>()?;
+    input.parse::<Token![/]>()?;
+    let closing_ident = input.call(Ident::parse_any)?;
+    if closing_ident != open_name {
+        abort!(
+            closing_ident.span(),
+            "Mismatched closing tag. Expected </{}>, found </{}>",
+            open_name,
+            closing_ident
+        );
+    }
+    input.parse::<Token![>]>()?;
+
+    Ok(Element::Component(ComponentElement {
+        open_name,
+        close_name: Some(closing_ident),
+        children,
+    }))
 }
 
 /// Parse an expression element: `<{expr}/>` or `<{expr} ...>...</{}>`
@@ -310,7 +333,23 @@ mod tests {
         };
         let markup: Markup = syn::parse2(input).unwrap();
         if let Element::Component(comp) = markup.element {
-            assert_eq!(comp.name.to_string(), "Header");
+            assert_eq!(comp.open_name.to_string(), "Header");
+        } else {
+            panic!("Expected Component element");
+        }
+    }
+
+    #[test]
+    fn test_parse_component_with_children() {
+        let input: proc_macro2::TokenStream = quote::quote! {
+            <Container>
+                {"Content"}
+            </Container>
+        };
+        let markup: Markup = syn::parse2(input).unwrap();
+        if let Element::Component(comp) = markup.element {
+            assert_eq!(comp.open_name.to_string(), "Container");
+            assert_eq!(comp.children.len(), 1);
         } else {
             panic!("Expected Component element");
         }
