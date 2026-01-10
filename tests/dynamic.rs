@@ -46,7 +46,7 @@ fn test_hover_with_closure() {
 
 #[test]
 fn test_complex_expression() {
-    let values = vec![10.0, 20.0, 30.0];
+    let values = [10.0, 20.0, 30.0];
     let index = 1;
     let _ = ui! {
         <div w={px(values[index] * 2.0)}/>
@@ -93,7 +93,7 @@ fn test_block_expression_in_child() {
         <div>
             {{
                 let x = 1 + 2;
-                format!("Result: {}", x)
+                format!("Result: {x}")
             }}
         </div>
     };
@@ -114,7 +114,7 @@ fn test_option_unwrap_in_child() {
     let maybe_name: Option<&str> = Some("Alice");
     let _ = ui! {
         <div>
-            {maybe_name.map(|n| format!("Hello, {}", n)).unwrap_or_default()}
+            {maybe_name.map(|n| format!("Hello, {n}")).unwrap_or_default()}
         </div>
     };
 }

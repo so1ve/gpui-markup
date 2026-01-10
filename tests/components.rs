@@ -8,7 +8,7 @@ use gpui_markup::ui;
 struct Header;
 
 impl Header {
-    fn new() -> Self {
+    const fn new() -> Self {
         Self
     }
 }
@@ -24,7 +24,7 @@ impl RenderOnce for Header {
 struct Footer;
 
 impl Footer {
-    fn new() -> Self {
+    const fn new() -> Self {
         Self
     }
 }
