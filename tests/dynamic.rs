@@ -19,7 +19,7 @@ fn test_dynamic_attribute_value() {
     let width = 300.0;
     let height = 200.0;
     let _ = ui! {
-        div [w: px(width), h: px(height)] {}
+        div { [w: px(width), h: px(height)] }
     };
 }
 
@@ -27,20 +27,20 @@ fn test_dynamic_attribute_value() {
 fn test_conditional_style_with_when() {
     let is_active = true;
     let _ = ui! {
-        div [
+        div { [
             bg: gpui::black(),
             when: (is_active, |s| s.border_color(gpui::blue())),
-        ] {}
+        ] }
     };
 }
 
 #[test]
 fn test_hover_with_closure() {
     let _ = ui! {
-        div [
+        div { [
             bg: gpui::white(),
             hover: |s: StyleRefinement| s.bg(gpui::black()),
-        ] {}
+        ] }
     };
 }
 
@@ -49,7 +49,7 @@ fn test_complex_expression() {
     let values = [10.0, 20.0, 30.0];
     let index = 1;
     let _ = ui! {
-        div [w: px(values[index] * 2.0)] {}
+        div { [w: px(values[index] * 2.0)] }
     };
 }
 
@@ -123,7 +123,7 @@ fn test_option_unwrap_in_child() {
 fn test_conditional_attribute_value() {
     let level = 2;
     let _ = ui! {
-        div [w: px(if level > 1 { 200.0 } else { 100.0 })] {}
+        div { [w: px(if level > 1 { 200.0 } else { 100.0 })] }
     };
 }
 
@@ -138,7 +138,7 @@ fn test_struct_field_in_attribute() {
         height: 200.0,
     };
     let _ = ui! {
-        div [w: px(config.width), h: px(config.height)] {}
+        div { [w: px(config.width), h: px(config.height)] }
     };
 }
 
@@ -167,8 +167,8 @@ fn test_array_index_in_child() {
 #[test]
 fn test_deeply_nested_structure() {
     let _ = ui! {
-        div [flex] {
-            div [flex_col] {
+        div { [flex]
+            div { [flex_col]
                 div {
                     "Level 1",
                     div {
@@ -194,7 +194,7 @@ fn test_nested_ui_macro() {
 
 #[test]
 fn test_nested_ui_macro_with_variable() {
-    let inner = ui! { div [flex] { "Inner" } };
+    let inner = ui! { div { [flex] "Inner" } };
     let _ = ui! {
         div {
             inner,

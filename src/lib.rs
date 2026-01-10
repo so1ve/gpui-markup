@@ -4,8 +4,8 @@
 //!
 //! ```ignore
 //! ui! {
-//!     div [flex, flex_col, w: px(200.0), bg: theme.secondary] {
-//!         div [text_size: px(16.0)] {
+//!     div { [flex, flex_col, w: px(200.0), bg: theme.secondary]
+//!         div { [text_size: px(16.0)]
 //!             "Hello World",
 //!         },
 //!     }
@@ -45,9 +45,9 @@ use crate::ast::Markup;
 /// ## Basic Elements
 ///
 /// ```ignore
-/// ui! { div }                         // -> div()
-/// ui! { div [flex] }                  // -> div().flex()
-/// ui! { div [w: px(200.0)] }          // -> div().w(px(200.0))
+/// ui! { div {} }                        // -> div()
+/// ui! { div { [flex] } }                // -> div().flex()
+/// ui! { div { [w: px(200.0)] } }        // -> div().w(px(200.0))
 /// ```
 ///
 /// ## Children
@@ -113,10 +113,10 @@ use crate::ast::Markup;
 /// Any expression can be used as an element:
 ///
 /// ```ignore
-/// ui! { Header::new() }                          // -> Header::new()
-/// ui! { Button::new("Click") [style: Primary] }  // -> Button::new("Click").style(Primary)
+/// ui! { (Header::new()) }                              // -> Header::new()
+/// ui! { (Button::new("Click")) { [style: Primary] } }  // -> Button::new("Click").style(Primary)
 /// ui! {
-///     Container::new() [flex] {
+///     (Container::new()) { [flex]
 ///         "Content",
 ///     }
 /// }
@@ -127,7 +127,7 @@ use crate::ast::Markup;
 /// Use tuples for attributes with multiple arguments:
 ///
 /// ```ignore
-/// ui! { div [when: (condition, |d| d.flex())] }
+/// ui! { div { [when: (condition, |d| d.flex())] } }
 /// // -> div().when(condition, |d| d.flex())
 /// ```
 #[proc_macro]

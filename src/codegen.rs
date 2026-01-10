@@ -124,23 +124,23 @@ mod tests {
 
     #[test]
     fn test_div_with_flag_attribute() {
-        assert_snapshot!(generate(quote::quote! { div [flex] {} }));
+        assert_snapshot!(generate(quote::quote! { div { [flex] } }));
     }
 
     #[test]
     fn test_div_with_multiple_flags() {
-        assert_snapshot!(generate(quote::quote! { div [flex, flex_col] {} }));
+        assert_snapshot!(generate(quote::quote! { div { [flex, flex_col] } }));
     }
 
     #[test]
     fn test_div_with_key_value_attribute() {
-        assert_snapshot!(generate(quote::quote! { div [w: px(200.0)] {} }));
+        assert_snapshot!(generate(quote::quote! { div { [w: px(200.0)] } }));
     }
 
     #[test]
     fn test_div_with_mixed_attributes() {
         assert_snapshot!(generate(
-            quote::quote! { div [flex, w: px(200.0), bg: theme.secondary] {} }
+            quote::quote! { div { [flex, w: px(200.0), bg: theme.secondary] } }
         ));
     }
 
@@ -176,7 +176,7 @@ mod tests {
 
     #[test]
     fn test_expression_element_with_attributes() {
-        assert_snapshot!(generate(quote::quote! { (Container::new(title)) [flex] }));
+        assert_snapshot!(generate(quote::quote! { (Container::new(title)) { [flex] } }));
     }
 
     #[test]
@@ -189,7 +189,7 @@ mod tests {
     #[test]
     fn test_nested_elements() {
         assert_snapshot!(generate(quote::quote! {
-            div [flex] {
+            div { [flex]
                 div { "Inner" },
             }
         }));
@@ -198,18 +198,18 @@ mod tests {
     #[test]
     fn test_multi_value_attribute() {
         assert_snapshot!(generate(
-            quote::quote! { div [when: (is_visible, |d| d.flex())] {} }
+            quote::quote! { div { [when: (is_visible, |d| d.flex())] } }
         ));
     }
 
     #[test]
     fn test_complex_nested() {
         assert_snapshot!(generate(quote::quote! {
-            div [flex, flex_col] {
-                div [text_size: px(16.0)] {
+            div { [flex, flex_col]
+                div { [text_size: px(16.0)]
                     "Hello World",
                 },
-                div [bg: theme.secondary] {
+                div { [bg: theme.secondary]
                     (Header::new()),
                 },
             }
@@ -219,14 +219,14 @@ mod tests {
     #[test]
     fn test_svg() {
         assert_snapshot!(generate(
-            quote::quote! { svg [path: icon_path, size: px(24.0)] {} }
+            quote::quote! { svg { [path: icon_path, size: px(24.0)] } }
         ));
     }
 
     #[test]
     fn test_anchored() {
         assert_snapshot!(generate(quote::quote! {
-            anchored [position: Point::default()] {
+            anchored { [position: Point::default()]
                 div { "Tooltip" },
             }
         }));
@@ -305,7 +305,7 @@ mod tests {
 
     #[test]
     fn test_component_with_attrs() {
-        assert_snapshot!(generate(quote::quote! { Header [flex, style: Primary] {} }));
+        assert_snapshot!(generate(quote::quote! { Header { [flex, style: Primary] } }));
     }
 
     #[test]
@@ -321,7 +321,7 @@ mod tests {
     fn test_component_nested() {
         assert_snapshot!(generate(quote::quote! {
             div {
-                Header [flex] {},
+                Header { [flex] },
                 Footer {},
             }
         }));
