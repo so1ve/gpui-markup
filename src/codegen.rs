@@ -2,8 +2,50 @@
 
 use proc_macro2::TokenStream;
 use quote::{ToTokens, quote};
+use syn::Ident;
 
 use crate::ast::{Attribute, Child, ComponentElement, Element, ExprElement, Markup, NativeElement};
+
+fn native_element_type(name: &str) -> &'static str {
+    match name {
+        "div" => "Div",
+        "img" => "Img",
+        "svg" => "Svg",
+        "canvas" => "Canvas",
+        "anchored" => "Anchored",
+        _ => unreachable!("Unknown native element: {name}"),
+    }
+}
+
+/// Generate base output with span preservation for open/close tags
+fn generate_base_with_spans(
+    open_name: &Ident,
+    close_name: Option<&Ident>,
+    constructor: impl FnOnce(&Ident) -> TokenStream,
+) -> TokenStream {
+    if let Some(close_name) = close_name {
+        let ctor = constructor(close_name);
+        quote! {
+            {
+                #[allow(path_statements)]
+                #open_name;
+                #ctor
+            }
+        }
+    } else {
+        constructor(open_name)
+    }
+}
+
+fn wrap_with_parent_check(output: &TokenStream, type_path: &TokenStream) -> TokenStream {
+    quote! {
+        {
+            fn __assert_parent_element<T: gpui::ParentElement>() {}
+            __assert_parent_element::<#type_path>();
+            #output
+        }
+    }
+}
 
 impl ToTokens for Markup {
     fn to_tokens(&self, tokens: &mut TokenStream) {
@@ -23,23 +65,20 @@ impl ToTokens for Element {
 
 impl ToTokens for NativeElement {
     fn to_tokens(&self, tokens: &mut TokenStream) {
-        let open_name = &self.open_name;
-
-        let mut output = self.close_name.as_ref().map_or_else(
-            || quote! { #open_name() },
-            |close_name| {
-                quote! {
-                    {
-                        #[allow(path_statements)]
-                        #open_name;
-                        #close_name()
-                    }
-                }
-            },
+        let mut output = generate_base_with_spans(
+            &self.open_name,
+            self.close_name.as_ref(),
+            |name| quote! { #name() },
         );
 
         output = append_attributes(output, &self.attributes);
-        output = append_children(output, &self.children);
+
+        if !self.children.is_empty() {
+            let type_name =
+                quote::format_ident!("{}", native_element_type(&self.open_name.to_string()));
+            output = wrap_with_parent_check(&output, &quote! { gpui::#type_name });
+            output = append_children(output, &self.children);
+        }
 
         tokens.extend(output);
     }
@@ -47,22 +86,17 @@ impl ToTokens for NativeElement {
 
 impl ToTokens for ComponentElement {
     fn to_tokens(&self, tokens: &mut TokenStream) {
-        let open_name = &self.open_name;
-
-        let mut output = self.close_name.as_ref().map_or_else(
-            || quote! { #open_name::new() },
-            |close_name| {
-                quote! {
-                    {
-                        #[allow(path_statements)]
-                        #open_name;
-                        #close_name::new()
-                    }
-                }
-            },
+        let mut output = generate_base_with_spans(
+            &self.open_name,
+            self.close_name.as_ref(),
+            |name| quote! { #name::new() },
         );
 
-        output = append_children(output, &self.children);
+        if !self.children.is_empty() {
+            let open_name = &self.open_name;
+            output = wrap_with_parent_check(&output, &quote! { #open_name });
+            output = append_children(output, &self.children);
+        }
 
         tokens.extend(output);
     }
