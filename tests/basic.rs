@@ -58,9 +58,12 @@ fn test_div_with_multiple_children() {
 #[test]
 fn test_nested_divs() {
     let _ = ui! {
-        div { [flex]
-            div { [flex_col]
-                div { [items_center]
+        div {
+            [flex]
+            div {
+                [flex_col]
+                div {
+                    [items_center]
                     "Deeply nested",
                 },
             },
@@ -86,14 +89,16 @@ fn test_when_attribute() {
 #[test]
 fn test_complex_styling() {
     let _ = ui! {
-        div { [
-            flex,
-            flex_col,
-            w: px(200.0),
-            border_1,
-            rounded_md,
-            cursor_pointer,
-        ] }
+        div {
+            [
+                flex,
+                flex_col,
+                w: px(200.0),
+                border_1,
+                rounded_md,
+                cursor_pointer,
+            ]
+        }
     };
 }
 

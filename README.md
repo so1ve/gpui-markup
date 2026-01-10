@@ -17,11 +17,14 @@ use gpui_markup::ui;
 
 fn my_view(cx: &mut ViewContext<Self>) -> impl IntoElement {
     ui! {
-        div { [flex, flex_col, gap: 2, p: 4, bg: cx.theme().colors().background]
-            div { [text_size: px(24.0), font_weight: FontWeight::BOLD]
+        div {
+            [flex, flex_col, gap: 2, p: 4, bg: cx.theme().colors().background]
+            div {
+                [text_size: px(24.0), font_weight: FontWeight::BOLD]
                 "Hello, GPUI!",
             },
-            div { [text_color: cx.theme().colors().text_muted]
+            div {
+                [text_color: cx.theme().colors().text_muted]
                 "A declarative way to build UIs",
             },
         }
@@ -193,7 +196,8 @@ ui! { Button::with_label("Click") { [style: Primary] } }
 
 // Builder pattern expression
 ui! {
-    div().flex() { [flex_col]
+    div().flex() {
+        [flex_col]
         "Content",
     }
 }
@@ -208,12 +212,15 @@ ui! { (a + b) }
 
 ```rust
 ui! {
-    div { [flex, flex_col, gap: 4]
-        div { [flex, justify_between]
+    div {
+        [flex, flex_col, gap: 4]
+        div {
+            [flex, justify_between]
             Label {},
             Button { [on_click: handle_click] },
         },
-        div { [flex: 1, overflow: hidden]
+        div {
+            [flex: 1, overflow: hidden]
             ScrollView { content },
         },
     }
