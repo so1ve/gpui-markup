@@ -84,22 +84,40 @@ ui! { <div when={condition, |d| d.bg(red())}/> }
 ### Children
 
 ```rust
-// Single child uses .child()
-ui! {
-    <div>
-        {"Hello"}
-    </div>
-}
-// -> div().child("Hello")
-
-// Multiple children use .children([...])
+// Children use chained .child() calls
 ui! {
     <div>
         {"First"}
         {"Second"}
     </div>
 }
-// -> div().children(["First".into_any_element(), "Second".into_any_element()])
+// -> div().child("First").child("Second")
+```
+
+### Spread Children
+
+Use `{..expr}` to spread an iterable as children:
+
+```rust
+let items: Vec<Div> = vec![div().child("A"), div().child("B")];
+
+// Spread an iterable
+ui! {
+    <div>
+        {..items}
+    </div>
+}
+// -> div().children(items)
+
+// Can be mixed with regular children
+ui! {
+    <div>
+        {"Header"}
+        {..items}
+        {"Footer"}
+    </div>
+}
+// -> div().child("Header").children(items).child("Footer")
 ```
 
 ### Comments
@@ -213,6 +231,8 @@ The `ui!` macro transforms the JSX-like syntax into GPUI's builder pattern at co
 | `<div flex/>` | `div().flex()` |
 | `<div w={x}/>` | `div().w(x)` |
 | `<div when={a, b}/>` | `div().when(a, b)` |
+| `<div>{a}{b}</div>` | `div().child(a).child(b)` |
+| `<div>{..items}</div>` | `div().children(items)` |
 | `<deferred>{e}</deferred>` | `deferred(e.into_any_element())` |
 | `<Foo/>` | `Foo::new()` |
 | `<{expr}/>` | `expr` |

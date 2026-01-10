@@ -283,20 +283,25 @@ fn is_closing_tag(input: ParseStream) -> bool {
     input.peek(Token![<]) && input.peek2(Token![/])
 }
 
-/// Parse a single child: `{expr}`, `{/* comment */}` (skipped), or nested
-/// element
+/// Parse a single child: `{expr}`, `{..expr}` (spread), `{/* comment */}`
+/// (skipped), or nested element
 fn parse_child(input: ParseStream) -> Result<Option<Child>> {
     if input.peek(Token![<]) {
         // Nested element
         let element = input.parse::<Element>()?;
         Ok(Some(Child::Element(element)))
     } else if input.peek(Brace) {
-        // Expression child or comment
+        // Expression child, spread, or comment
         let content;
         braced!(content in input);
         // Empty braces `{}` are treated as comments (from `{/* ... */}`)
         if content.is_empty() {
             Ok(None)
+        } else if content.peek(Token![..]) {
+            // Spread expression: {..expr}
+            content.parse::<Token![..]>()?;
+            let expr: Expr = content.parse()?;
+            Ok(Some(Child::Spread(expr)))
         } else {
             let expr: Expr = content.parse()?;
             Ok(Some(Child::Expression(expr)))
@@ -399,5 +404,21 @@ mod tests {
         };
         let markup: Markup = syn::parse2(input).unwrap();
         assert!(matches!(markup.element, Element::Expression(_)));
+    }
+
+    #[test]
+    fn test_parse_spread_children() {
+        let input: proc_macro2::TokenStream = quote::quote! {
+            <div>
+                {..items}
+            </div>
+        };
+        let markup: Markup = syn::parse2(input).unwrap();
+        if let Element::Native(el) = markup.element {
+            assert_eq!(el.children.len(), 1);
+            assert!(matches!(el.children[0], Child::Spread(_)));
+        } else {
+            panic!("Expected Native element");
+        }
     }
 }

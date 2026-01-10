@@ -1,7 +1,7 @@
 //! Dynamic content tests for gpui-markup.
 
 use gpui::prelude::FluentBuilder;
-use gpui::{InteractiveElement, IntoElement, ParentElement, StyleRefinement, Styled, div, px};
+use gpui::{InteractiveElement, ParentElement, StyleRefinement, Styled, div, px};
 use gpui_markup::ui;
 
 #[test]

@@ -135,7 +135,7 @@ impl ToTokens for Child {
     fn to_tokens(&self, tokens: &mut TokenStream) {
         match self {
             Self::Element(element) => element.to_tokens(tokens),
-            Self::Expression(expr) => expr.to_tokens(tokens),
+            Self::Expression(expr) | Self::Spread(expr) => expr.to_tokens(tokens),
         }
     }
 }
@@ -150,21 +150,15 @@ fn append_attributes(mut output: TokenStream, attributes: &[Attribute]) -> Token
     output
 }
 
-fn append_children(output: TokenStream, children: &[Child]) -> TokenStream {
-    match children.len() {
-        0 => output,
-        1 => {
-            let child = &children[0];
-            quote! { #output.child(#child) }
-        }
-        _ => {
-            let children_tokens: Vec<_> = children
-                .iter()
-                .map(|c| quote! { (#c).into_any_element() })
-                .collect();
-            quote! { #output.children([#(#children_tokens),*]) }
-        }
+fn append_children(mut output: TokenStream, children: &[Child]) -> TokenStream {
+    for child in children {
+        output = match child {
+            Child::Element(element) => quote! { #output.child(#element) },
+            Child::Expression(expr) => quote! { #output.child(#expr) },
+            Child::Spread(expr) => quote! { #output.children(#expr) },
+        };
     }
+    output
 }
 
 #[cfg(test)]
@@ -316,6 +310,26 @@ mod tests {
             <deferred>
                 <div>{"Deferred content"}</div>
             </deferred>
+        }));
+    }
+
+    #[test]
+    fn test_spread_children() {
+        assert_snapshot!(generate(quote::quote! {
+            <div>
+                {..items}
+            </div>
+        }));
+    }
+
+    #[test]
+    fn test_spread_with_siblings() {
+        assert_snapshot!(generate(quote::quote! {
+            <div>
+                {"Header"}
+                {..items}
+                {"Footer"}
+            </div>
         }));
     }
 }

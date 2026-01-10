@@ -67,4 +67,6 @@ pub enum Child {
     Element(Element),
     /// An expression: `{expr}` or `{"text"}`
     Expression(Expr),
+    /// A spread expression: `{..expr}` where expr is iterable
+    Spread(Expr),
 }

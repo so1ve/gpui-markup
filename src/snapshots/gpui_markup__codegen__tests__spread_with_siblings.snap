@@ -1,6 +1,6 @@
 ---
 source: src/codegen.rs
-expression: "generate(quote::quote! { <div> {\"First\"} {\"Second\"} </div> })"
+expression: "generate(quote::quote! { <div> {\"Header\"} {..items} {\"Footer\"} </div> })"
 ---
 fn __wrapper() {
     {
@@ -11,6 +11,7 @@ fn __wrapper() {
             div()
         }
     }
-        .child("First")
-        .child("Second")
+        .child("Header")
+        .children(items)
+        .child("Footer")
 }

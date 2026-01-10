@@ -13,8 +13,8 @@ fn __wrapper() {
             .flex()
             .flex_col()
     }
-        .children([
-            ({
+        .child(
+            {
                 fn __assert_parent_element<T: gpui::ParentElement>() {}
                 __assert_parent_element::<gpui::Div>();
                 {
@@ -23,9 +23,10 @@ fn __wrapper() {
                 }
                     .text_size(px(16.0))
             }
-                .child("Hello World"))
-                .into_any_element(),
-            ({
+                .child("Hello World"),
+        )
+        .child(
+            {
                 fn __assert_parent_element<T: gpui::ParentElement>() {}
                 __assert_parent_element::<gpui::Div>();
                 {
@@ -34,7 +35,6 @@ fn __wrapper() {
                 }
                     .bg(theme.secondary)
             }
-                .child(Header::new()))
-                .into_any_element(),
-        ])
+                .child(Header::new()),
+        )
 }

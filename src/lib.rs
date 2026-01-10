@@ -53,22 +53,39 @@ use crate::ast::Markup;
 /// ## Children
 ///
 /// ```ignore
-/// // Single child uses .child()
-/// ui! {
-///     <div>
-///         {"Hello"}
-///     </div>
-/// }
-/// // -> div().child("Hello")
-///
-/// // Multiple children use .children([...])
+/// // Children use chained .child() calls
 /// ui! {
 ///     <div>
 ///         {"First"}
 ///         {"Second"}
 ///     </div>
 /// }
-/// // -> div().children(["First", "Second"])
+/// // -> div().child("First").child("Second")
+/// ```
+///
+/// ## Spread Children
+///
+/// Use `{..expr}` to spread an iterable as children:
+///
+/// ```ignore
+/// let items: Vec<Div> = vec![div(), div()];
+///
+/// ui! {
+///     <div>
+///         {..items}
+///     </div>
+/// }
+/// // -> div().children(items)
+///
+/// // Can be mixed with regular children
+/// ui! {
+///     <div>
+///         {"Header"}
+///         {..items}
+///         {"Footer"}
+///     </div>
+/// }
+/// // -> div().child("Header").children(items).child("Footer")
 /// ```
 ///
 /// ## Components
