@@ -7,6 +7,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.2.0](https://github.com/so1ve/gpui-markup/compare/v0.1.2...v0.2.0) - 2026-01-10
+
+### Added
+
+- support method calls in children
+- [**breaking**] use `.child` by default, add new syntax `{..children}` to express `Vec<Element>`
+
+### Fixed
+
+- should capture whole `TokenStream` for method call instead of implementing our own naive parser
+- should not wrap braces in braces
+
+### Other
+
+- add more invalid syntax cases
+- document nested macros usage
+
 ## [0.1.2](https://github.com/so1ve/gpui-markup/compare/v0.1.1...v0.1.2) - 2026-01-10
 
 ### Added
