@@ -43,6 +43,28 @@ ui! { <div>{"content"}</div> }
 // -> div().child("content")
 ```
 
+### Deferred
+
+The `<deferred>` element wraps content for deferred rendering. The child must implement `IntoElement`:
+
+```rust
+ui! {
+    <deferred>
+        <div>{"Deferred content"}</div>
+    </deferred>
+}
+// -> deferred(div().child("Deferred content").into_any_element())
+
+// Can also use expressions
+let element = div().child("Content");
+ui! {
+    <deferred>
+        {element}
+    </deferred>
+}
+// -> deferred(element.into_any_element())
+```
+
 ### Attributes
 
 ```rust
@@ -161,6 +183,7 @@ The `ui!` macro transforms the JSX-like syntax into GPUI's builder pattern at co
 | `<div flex/>` | `div().flex()` |
 | `<div w={x}/>` | `div().w(x)` |
 | `<div when={a, b}/>` | `div().when(a, b)` |
+| `<deferred>{e}</deferred>` | `deferred(e.into_any_element())` |
 | `<Foo/>` | `Foo::new()` |
 | `<{expr}/>` | `expr` |
 
