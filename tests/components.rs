@@ -3,7 +3,6 @@
 use gpui::{App, IntoElement, ParentElement, RenderOnce, Styled, Window, div, px};
 use gpui_markup::ui;
 
-/// A simple header component.
 #[derive(IntoElement)]
 struct Header;
 
@@ -15,11 +14,10 @@ impl Header {
 
 impl RenderOnce for Header {
     fn render(self, _window: &mut Window, _cx: &mut App) -> impl IntoElement {
-        div().h(px(60.0)).w_full()
+        div()
     }
 }
 
-/// A simple footer component.
 #[derive(IntoElement)]
 struct Footer;
 
@@ -31,7 +29,26 @@ impl Footer {
 
 impl RenderOnce for Footer {
     fn render(self, _window: &mut Window, _cx: &mut App) -> impl IntoElement {
-        div().h(px(40.0)).w_full()
+        div()
+    }
+}
+
+#[derive(IntoElement)]
+struct Container;
+
+impl Container {
+    const fn new() -> Self {
+        Self
+    }
+}
+
+impl ParentElement for Container {
+    fn extend(&mut self, _elements: impl IntoIterator<Item = gpui::AnyElement>) {}
+}
+
+impl RenderOnce for Container {
+    fn render(self, _window: &mut Window, _cx: &mut App) -> impl IntoElement {
+        div()
     }
 }
 
@@ -80,5 +97,14 @@ fn test_nested_expression_tags() {
                 {"Nested content"}
             </{}>
         </{}>
+    };
+}
+
+#[test]
+fn test_component_with_children() {
+    let _ = ui! {
+        <Container>
+            <div>{"Inside Container"}</div>
+        </Container>
     };
 }
