@@ -215,7 +215,7 @@ fn parse_expression_element(input: ParseStream) -> Result<Element> {
     if !closing_content.is_empty() {
         abort!(
             closing_content.span(),
-            "Closing tag for expression elements should be empty: </{{}}>"
+            "Closing tag for expression elements should be empty: </{}>"
         );
     }
     input.parse::<Token![>]>()?;
