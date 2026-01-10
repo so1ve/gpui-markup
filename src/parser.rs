@@ -6,7 +6,10 @@ use syn::parse::{Parse, ParseStream};
 use syn::token::Brace;
 use syn::{Expr, Ident, Result, Token, braced};
 
-use crate::ast::{Attribute, Child, ComponentElement, DivElement, Element, ExprElement, Markup};
+use crate::ast::{Attribute, Child, ComponentElement, Element, ExprElement, Markup, NativeElement};
+
+/// Native GPUI element names
+const NATIVE_ELEMENTS: &[&str] = &["div", "img", "svg", "canvas", "anchored"];
 
 impl Parse for Markup {
     fn parse(input: ParseStream) -> Result<Self> {
@@ -24,18 +27,18 @@ impl Parse for Element {
             // <{expr}> - expression tag
             parse_expression_element(input)
         } else {
-            // <ident> - div or component
+            // <ident> - native element or component
             let ident = input.call(Ident::parse_any)?;
             let name = ident.to_string();
 
-            if name == "div" {
-                parse_div_element(input, ident)
+            if NATIVE_ELEMENTS.contains(&name.as_str()) {
+                parse_native_element(input, ident)
             } else if is_component_name(&name) {
                 parse_component_element(input, ident)
             } else {
                 abort!(
                     ident.span(),
-                    "Unknown element '{}'. Use 'div' for native elements or PascalCase for components.",
+                    "Unknown element '{}'. Use native elements (div, img, svg, canvas, anchored) or PascalCase for components.",
                     name
                 );
             }
@@ -48,15 +51,16 @@ fn is_component_name(name: &str) -> bool {
     name.chars().next().is_some_and(|c| c.is_ascii_uppercase())
 }
 
-fn parse_div_element(input: ParseStream, open_name: Ident) -> Result<Element> {
+fn parse_native_element(input: ParseStream, open_name: Ident) -> Result<Element> {
+    let tag_name = open_name.to_string();
     let attributes = parse_attributes(input)?;
 
     // Check for self-closing or opening tag
     if input.peek(Token![/]) {
-        // Self-closing: <div .../>
+        // Self-closing: <tag .../>
         input.parse::<Token![/]>()?;
         input.parse::<Token![>]>()?;
-        return Ok(Element::Div(DivElement {
+        return Ok(Element::Native(NativeElement {
             open_name,
             close_name: None,
             attributes,
@@ -64,26 +68,27 @@ fn parse_div_element(input: ParseStream, open_name: Ident) -> Result<Element> {
         }));
     }
 
-    // Opening tag: <div ...>
+    // Opening tag: <tag ...>
     input.parse::<Token![>]>()?;
 
     // Parse children
     let children = parse_children(input)?;
 
-    // Closing tag: </div>
+    // Closing tag: </tag>
     input.parse::<Token![<]>()?;
     input.parse::<Token![/]>()?;
     let closing_ident = input.call(Ident::parse_any)?;
-    if closing_ident != "div" {
+    if closing_ident != tag_name {
         abort!(
             closing_ident.span(),
-            "Mismatched closing tag. Expected </div>, found </{}>",
+            "Mismatched closing tag. Expected </{}>, found </{}>",
+            tag_name,
             closing_ident
         );
     }
     input.parse::<Token![>]>()?;
 
-    Ok(Element::Div(DivElement {
+    Ok(Element::Native(NativeElement {
         open_name,
         close_name: Some(closing_ident),
         attributes,
@@ -241,7 +246,7 @@ mod tests {
             <div/>
         };
         let markup: Markup = syn::parse2(input).unwrap();
-        assert!(matches!(markup.element, Element::Div(_)));
+        assert!(matches!(markup.element, Element::Native(_)));
     }
 
     #[test]
@@ -250,10 +255,10 @@ mod tests {
             <div flex w={px(200.0)}/>
         };
         let markup: Markup = syn::parse2(input).unwrap();
-        if let Element::Div(div) = markup.element {
-            assert_eq!(div.attributes.len(), 2);
+        if let Element::Native(el) = markup.element {
+            assert_eq!(el.attributes.len(), 2);
         } else {
-            panic!("Expected Div element");
+            panic!("Expected Native element");
         }
     }
 
@@ -265,10 +270,36 @@ mod tests {
             </div>
         };
         let markup: Markup = syn::parse2(input).unwrap();
-        if let Element::Div(div) = markup.element {
-            assert_eq!(div.children.len(), 1);
+        if let Element::Native(el) = markup.element {
+            assert_eq!(el.children.len(), 1);
         } else {
-            panic!("Expected Div element");
+            panic!("Expected Native element");
+        }
+    }
+
+    #[test]
+    fn test_parse_img() {
+        let input: proc_macro2::TokenStream = quote::quote! {
+            <img src={image_source}/>
+        };
+        let markup: Markup = syn::parse2(input).unwrap();
+        if let Element::Native(el) = markup.element {
+            assert_eq!(el.open_name.to_string(), "img");
+        } else {
+            panic!("Expected Native element");
+        }
+    }
+
+    #[test]
+    fn test_parse_svg() {
+        let input: proc_macro2::TokenStream = quote::quote! {
+            <svg path={icon_path}/>
+        };
+        let markup: Markup = syn::parse2(input).unwrap();
+        if let Element::Native(el) = markup.element {
+            assert_eq!(el.open_name.to_string(), "svg");
+        } else {
+            panic!("Expected Native element");
         }
     }
 

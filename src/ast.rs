@@ -11,17 +11,17 @@ pub struct Markup {
 /// An element in the markup tree.
 #[derive(Debug)]
 pub enum Element {
-    /// `<div ...>` - native div element
-    Div(DivElement),
+    /// Native elements: `<div>`, `<img>`, `<svg>`, `<canvas>`, `<anchored>`
+    Native(NativeElement),
     /// `<Foo/>` - component without parameters
     Component(ComponentElement),
     /// `<{expr}/>` or `<{expr}>...</{}>` - expression as tag
     Expression(ExprElement),
 }
 
-/// A native div element
+/// Native GPUI elements (div, img, svg, canvas, anchored)
 #[derive(Debug)]
-pub struct DivElement {
+pub struct NativeElement {
     pub open_name: Ident,
     pub close_name: Option<Ident>,
     pub attributes: Vec<Attribute>,

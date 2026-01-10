@@ -3,7 +3,7 @@
 use proc_macro2::TokenStream;
 use quote::{ToTokens, quote};
 
-use crate::ast::{Attribute, Child, ComponentElement, DivElement, Element, ExprElement, Markup};
+use crate::ast::{Attribute, Child, ComponentElement, Element, ExprElement, Markup, NativeElement};
 
 impl ToTokens for Markup {
     fn to_tokens(&self, tokens: &mut TokenStream) {
@@ -14,14 +14,14 @@ impl ToTokens for Markup {
 impl ToTokens for Element {
     fn to_tokens(&self, tokens: &mut TokenStream) {
         match self {
-            Self::Div(div) => div.to_tokens(tokens),
+            Self::Native(el) => el.to_tokens(tokens),
             Self::Component(comp) => comp.to_tokens(tokens),
             Self::Expression(expr) => expr.to_tokens(tokens),
         }
     }
 }
 
-impl ToTokens for DivElement {
+impl ToTokens for NativeElement {
     fn to_tokens(&self, tokens: &mut TokenStream) {
         let open_name = &self.open_name;
 
@@ -217,6 +217,34 @@ mod tests {
                     <Header/>
                 </div>
             </div>
+        }));
+    }
+
+    #[test]
+    fn test_img() {
+        assert_snapshot!(generate(quote::quote! { <img src={image_source}/> }));
+    }
+
+    #[test]
+    fn test_svg() {
+        assert_snapshot!(generate(
+            quote::quote! { <svg path={icon_path} size={px(24.0)}/> }
+        ));
+    }
+
+    #[test]
+    fn test_canvas() {
+        assert_snapshot!(generate(
+            quote::quote! { <canvas w={px(100.0)} h={px(100.0)}/> }
+        ));
+    }
+
+    #[test]
+    fn test_anchored() {
+        assert_snapshot!(generate(quote::quote! {
+            <anchored position={Point::default()}>
+                <div>{"Tooltip"}</div>
+            </anchored>
         }));
     }
 }
