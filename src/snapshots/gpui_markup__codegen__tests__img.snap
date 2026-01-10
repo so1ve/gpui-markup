@@ -1,7 +1,0 @@
----
-source: src/codegen.rs
-expression: "generate(quote::quote! { <img src={image_source}/> })"
----
-fn __wrapper() {
-    img().src(image_source)
-}

@@ -1,7 +1,0 @@
----
-source: src/codegen.rs
-expression: "generate(quote::quote! { <canvas w={px(100.0)} h={px(100.0)}/> })"
----
-fn __wrapper() {
-    canvas().w(px(100.0)).h(px(100.0))
-}
