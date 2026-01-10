@@ -2,4 +2,39 @@
 source: src/codegen.rs
 expression: "generate(quote::quote!\n{\n    <div flex flex_col> <div text_size={px(16.0)}> {\"Hello World\"} </div> <div\n    bg={theme.secondary}> <Header/> </div> </div>\n})"
 ---
-{ # [allow (path_statements)] div ; div () } . flex () . flex_col () . children ([({ # [allow (path_statements)] div ; div () } . text_size (px (16.0)) . child ("Hello World")) . into_any_element () , ({ # [allow (path_statements)] div ; div () } . bg (theme . secondary) . child (Header :: new ())) . into_any_element ()])
+fn __wrapper() {
+    {
+        fn __assert_parent_element<T: gpui::ParentElement>() {}
+        __assert_parent_element::<gpui::Div>();
+        {
+            #[allow(path_statements)] div;
+            div()
+        }
+            .flex()
+            .flex_col()
+    }
+        .children([
+            ({
+                fn __assert_parent_element<T: gpui::ParentElement>() {}
+                __assert_parent_element::<gpui::Div>();
+                {
+                    #[allow(path_statements)] div;
+                    div()
+                }
+                    .text_size(px(16.0))
+            }
+                .child("Hello World"))
+                .into_any_element(),
+            ({
+                fn __assert_parent_element<T: gpui::ParentElement>() {}
+                __assert_parent_element::<gpui::Div>();
+                {
+                    #[allow(path_statements)] div;
+                    div()
+                }
+                    .bg(theme.secondary)
+            }
+                .child(Header::new()))
+                .into_any_element(),
+        ])
+}

@@ -2141,6 +2141,7 @@ version = "0.1.0"
 dependencies = [
  "gpui",
  "insta",
+ "prettyplease",
  "proc-macro-error2",
  "proc-macro2",
  "quote",

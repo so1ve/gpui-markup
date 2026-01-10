@@ -2,4 +2,6 @@
 source: src/codegen.rs
 expression: "generate(quote::quote! { <div when={is_visible, |d| d.flex()}/> })"
 ---
-div () . when (is_visible , | d | d . flex ())
+fn __wrapper() {
+    div().when(is_visible, |d| d.flex())
+}

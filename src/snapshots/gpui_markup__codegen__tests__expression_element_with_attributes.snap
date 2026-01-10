@@ -2,4 +2,6 @@
 source: src/codegen.rs
 expression: "generate(quote::quote! { <{Container::new(title)} flex/> })"
 ---
-Container :: new (title) . flex ()
+fn __wrapper() {
+    Container::new(title).flex()
+}

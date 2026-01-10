@@ -2,4 +2,6 @@
 source: src/codegen.rs
 expression: "generate(quote::quote! { <svg path={icon_path} size={px(24.0)}/> })"
 ---
-svg () . path (icon_path) . size (px (24.0))
+fn __wrapper() {
+    svg().path(icon_path).size(px(24.0))
+}

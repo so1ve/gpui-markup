@@ -2,4 +2,35 @@
 source: src/codegen.rs
 expression: "generate(quote::quote!\n{ <div> <div>{\"First\"}</div> <div>{\"Second\"}</div> </div> })"
 ---
-{ # [allow (path_statements)] div ; div () } . children ([({ # [allow (path_statements)] div ; div () } . child ("First")) . into_any_element () , ({ # [allow (path_statements)] div ; div () } . child ("Second")) . into_any_element ()])
+fn __wrapper() {
+    {
+        fn __assert_parent_element<T: gpui::ParentElement>() {}
+        __assert_parent_element::<gpui::Div>();
+        {
+            #[allow(path_statements)] div;
+            div()
+        }
+    }
+        .children([
+            ({
+                fn __assert_parent_element<T: gpui::ParentElement>() {}
+                __assert_parent_element::<gpui::Div>();
+                {
+                    #[allow(path_statements)] div;
+                    div()
+                }
+            }
+                .child("First"))
+                .into_any_element(),
+            ({
+                fn __assert_parent_element<T: gpui::ParentElement>() {}
+                __assert_parent_element::<gpui::Div>();
+                {
+                    #[allow(path_statements)] div;
+                    div()
+                }
+            }
+                .child("Second"))
+                .into_any_element(),
+        ])
+}

@@ -2,4 +2,25 @@
 source: src/codegen.rs
 expression: "generate(quote::quote!\n{ <anchored position={Point::default()}> <div>{\"Tooltip\"}</div> </anchored> })"
 ---
-{ # [allow (path_statements)] anchored ; anchored () } . position (Point :: default ()) . child ({ # [allow (path_statements)] div ; div () } . child ("Tooltip"))
+fn __wrapper() {
+    {
+        fn __assert_parent_element<T: gpui::ParentElement>() {}
+        __assert_parent_element::<gpui::Anchored>();
+        {
+            #[allow(path_statements)] anchored;
+            anchored()
+        }
+            .position(Point::default())
+    }
+        .child(
+            {
+                fn __assert_parent_element<T: gpui::ParentElement>() {}
+                __assert_parent_element::<gpui::Div>();
+                {
+                    #[allow(path_statements)] div;
+                    div()
+                }
+            }
+                .child("Tooltip"),
+        )
+}

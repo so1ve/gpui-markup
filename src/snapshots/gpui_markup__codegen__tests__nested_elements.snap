@@ -2,4 +2,25 @@
 source: src/codegen.rs
 expression: "generate(quote::quote! { <div flex> <div>{\"Inner\"}</div> </div> })"
 ---
-{ # [allow (path_statements)] div ; div () } . flex () . child ({ # [allow (path_statements)] div ; div () } . child ("Inner"))
+fn __wrapper() {
+    {
+        fn __assert_parent_element<T: gpui::ParentElement>() {}
+        __assert_parent_element::<gpui::Div>();
+        {
+            #[allow(path_statements)] div;
+            div()
+        }
+            .flex()
+    }
+        .child(
+            {
+                fn __assert_parent_element<T: gpui::ParentElement>() {}
+                __assert_parent_element::<gpui::Div>();
+                {
+                    #[allow(path_statements)] div;
+                    div()
+                }
+            }
+                .child("Inner"),
+        )
+}

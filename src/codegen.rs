@@ -161,8 +161,9 @@ mod tests {
 
     fn generate(input: proc_macro2::TokenStream) -> String {
         let markup: Markup = syn::parse2(input).unwrap();
-        let output = quote! { #markup };
-        output.to_string()
+        let output = quote! { fn __wrapper() { #markup } };
+        let syntax_tree = syn::parse_file(&output.to_string()).unwrap();
+        prettyplease::unparse(&syntax_tree)
     }
 
     #[test]

@@ -19,6 +19,7 @@ syn = { version = "2", features = ["full", "parsing", "extra-traits"] }
 [dev-dependencies]
 gpui = "0.2.2"
 insta = "1"
+prettyplease = "0.2"
 trybuild = "1"
 
 [lints.clippy]
