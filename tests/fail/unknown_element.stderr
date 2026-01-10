@@ -1,4 +1,4 @@
-error: Unknown element 'span'. Use native elements (div, img, svg, canvas, anchored, deferred) or PascalCase for components.
+error: Unknown element 'span'. Use native elements (div, svg, anchored, deferred) or PascalCase for components.
  --> tests/fail/unknown_element.rs:5:20
   |
 5 |     let _ = ui! { <span/> };
