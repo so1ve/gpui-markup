@@ -84,7 +84,7 @@ fn parse_expression_element(input: ParseStream, require_braces: bool) -> Result<
     if require_braces && !input.peek(Brace) {
         abort!(
             expr.span(),
-            "expression element requires braces: `expr {{ }}`"
+            "expression element requires braces: `expr { }`"
         );
     }
 
@@ -124,7 +124,7 @@ fn parse_deferred_element(input: ParseStream, name: Ident) -> Result<Element> {
     if !input.peek(Brace) {
         abort!(
             name.span(),
-            "deferred must have exactly one child: `deferred {{ child }}`"
+            "deferred must have exactly one child: `deferred { child }`"
         );
     }
 
