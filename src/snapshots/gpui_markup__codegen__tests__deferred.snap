@@ -3,5 +3,9 @@ source: src/codegen.rs
 expression: "generate(quote::quote! { deferred { div { \"Deferred content\" }, } })"
 ---
 fn __wrapper() {
-    deferred((div().child("Deferred content")).into_any_element())
+    deferred(
+        gpui::IntoElement::into_any_element(
+            gpui::ParentElement::child(div(), "Deferred content"),
+        ),
+    )
 }

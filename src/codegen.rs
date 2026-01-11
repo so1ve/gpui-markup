@@ -52,7 +52,7 @@ impl ToTokens for DeferredElement {
             Child::Expression(expr) => quote! { #expr },
             _ => unreachable!("deferred only accepts Element or Expression"),
         };
-        tokens.extend(quote! { #name((#child_tokens).into_any_element()) });
+        tokens.extend(quote! { #name(gpui::IntoElement::into_any_element(#child_tokens)) });
     }
 }
 
@@ -90,9 +90,9 @@ fn append_attributes(output: TokenStream, attributes: &[Attribute]) -> TokenStre
 
 fn append_children(output: TokenStream, children: &[Child]) -> TokenStream {
     children.iter().fold(output, |acc, child| match child {
-        Child::Element(element) => quote! { #acc.child(#element) },
-        Child::Expression(expr) => quote! { #acc.child(#expr) },
-        Child::Spread(expr) => quote! { #acc.children(#expr) },
+        Child::Element(element) => quote! { gpui::ParentElement::child(#acc, #element) },
+        Child::Expression(expr) => quote! { gpui::ParentElement::child(#acc, #expr) },
+        Child::Spread(expr) => quote! { gpui::ParentElement::children(#acc, #expr) },
         Child::MethodChain(tokens) => quote! { #acc.#tokens },
     })
 }

@@ -1,7 +1,7 @@
 ---
 source: src/codegen.rs
-expression: "generate(quote::quote! { div [flex] { div { \"Inner\" }, } })"
+expression: "generate(quote::quote! { div @[flex] { div { \"Inner\" }, } })"
 ---
 fn __wrapper() {
-    div().flex().child(div().child("Inner"))
+    gpui::ParentElement::child(div().flex(), gpui::ParentElement::child(div(), "Inner"))
 }

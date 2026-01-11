@@ -45,11 +45,11 @@ ui! { div @[flex, flex_col] {} }
 
 // Div with children
 ui! { div { "content" } }
-// -> div().child("content")
+// -> gpui::ParentElement::child(div(), "content")
 
 // Full form: attributes before braces, children inside
 ui! { div @[flex] { "content" } }
-// -> div().flex().child("content")
+// -> gpui::ParentElement::child(div().flex(), "content")
 ```
 
 ### Attributes
@@ -82,7 +82,13 @@ ui! {
         div @[bold] { "Nested" },
     }
 }
-// -> div().child("First").child("Second").child(div().bold().child("Nested"))
+// -> gpui::ParentElement::child(
+//      gpui::ParentElement::child(
+//        gpui::ParentElement::child(div(), "First"),
+//        "Second"
+//      ),
+//      gpui::ParentElement::child(div().bold(), "Nested")
+//    )
 ```
 
 ### Deferred
@@ -95,7 +101,7 @@ ui! {
         div { "Deferred content" },
     }
 }
-// -> deferred(div().child("Deferred content").into_any_element())
+// -> deferred(gpui::IntoElement::into_any_element(gpui::ParentElement::child(div(), "Deferred content")))
 ```
 
 ### Spread Children
@@ -110,7 +116,7 @@ ui! {
         ..items,
     }
 }
-// -> div().children(items)
+// -> gpui::ParentElement::children(div(), items)
 
 // Can be mixed with regular children
 ui! {
@@ -120,7 +126,13 @@ ui! {
         "Footer",
     }
 }
-// -> div().child("Header").children(items).child("Footer")
+// -> gpui::ParentElement::child(
+//      gpui::ParentElement::children(
+//        gpui::ParentElement::child(div(), "Header"),
+//        items
+//      ),
+//      "Footer"
+//    )
 ```
 
 ### Method Chains
@@ -151,7 +163,7 @@ ui! {
            comment */
     }
 }
-// -> div().child("Visible content")
+// -> gpui::ParentElement::child(div(), "Visible content")
 ```
 
 ### Components
@@ -174,7 +186,7 @@ ui! {
         Footer {},
     }
 }
-// -> Container::new().child("Content").child(Footer::new())
+// -> gpui::ParentElement::child(gpui::ParentElement::child(Container::new(), "Content"), Footer::new())
 ```
 
 ### Expression Elements
@@ -196,7 +208,7 @@ ui! {
         "Content",
     }
 }
-// -> div().flex().flex_col().child("Content")
+// -> gpui::ParentElement::child(div().flex().flex_col(), "Content")
 
 // Parentheses for complex expressions (braces optional)
 ui! { (a + b) }
@@ -247,10 +259,10 @@ The `ui!` macro transforms the markup syntax into GPUI's builder pattern at comp
 | `div @[flex] {}` | `div().flex()` |
 | `div @[w: x] {}` | `div().w(x)` |
 | `div @[when: (a, b)] {}` | `div().when(a, b)` |
-| `div { a, b }` | `div().child(a).child(b)` |
-| `div { ..items }` | `div().children(items)` |
+| `div { a, b }` | `gpui::ParentElement::child(gpui::ParentElement::child(div(), a), b)` |
+| `div { ..items }` | `gpui::ParentElement::children(div(), items)` |
 | `div { .a().b() }` | `div().a().b()` |
-| `deferred { e }` | `deferred(e.into_any_element())` |
+| `deferred { e }` | `deferred(gpui::IntoElement::into_any_element(e))` |
 | `Header {}` | `Header::new()` |
 | `Header @[a] {}` | `Header::new().a()` |
 | `expr {}` | `expr` |

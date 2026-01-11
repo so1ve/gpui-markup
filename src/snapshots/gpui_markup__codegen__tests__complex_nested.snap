@@ -1,11 +1,13 @@
 ---
 source: src/codegen.rs
-expression: "generate(quote::quote!\n{\n    div [flex, flex_col]\n    {\n        div [text_size: px(16.0)] { \"Hello World\", }, div\n        [bg: theme.secondary] { (Header::new()), },\n    }\n})"
+expression: "generate(quote::quote!\n{\n    div @[flex, flex_col]\n    {\n        div @[text_size: px(16.0)] { \"Hello World\", }, div\n        @[bg: theme.secondary] { (Header::new()), },\n    }\n})"
 ---
 fn __wrapper() {
-    div()
-        .flex()
-        .flex_col()
-        .child(div().text_size(px(16.0)).child("Hello World"))
-        .child(div().bg(theme.secondary).child((Header::new())))
+    gpui::ParentElement::child(
+        gpui::ParentElement::child(
+            div().flex().flex_col(),
+            gpui::ParentElement::child(div().text_size(px(16.0)), "Hello World"),
+        ),
+        gpui::ParentElement::child(div().bg(theme.secondary), (Header::new())),
+    )
 }

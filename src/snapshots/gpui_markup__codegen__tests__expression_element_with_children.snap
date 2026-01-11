@@ -1,7 +1,7 @@
 ---
 source: src/codegen.rs
-expression: "generate(quote::quote! { <{Container::new(title)}>{\"Content\"}</{}> })"
+expression: "generate(quote::quote! { Container::new(title) { \"Content\" } })"
 ---
 fn __wrapper() {
-    Container::new(title).child("Content")
+    gpui::ParentElement::child(Container::new(title), "Content")
 }

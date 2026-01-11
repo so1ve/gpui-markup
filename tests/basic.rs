@@ -1,7 +1,7 @@
 //! Basic syntax tests for gpui-markup.
 
 use gpui::prelude::FluentBuilder;
-use gpui::{FontWeight, InteractiveElement, IntoElement, ParentElement, Styled, deferred, div, px};
+use gpui::{FontWeight, InteractiveElement, Styled, deferred, div, px};
 use gpui_markup::ui;
 
 #[test]

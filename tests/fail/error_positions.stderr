@@ -1,0 +1,56 @@
+error[E0277]: the trait bound `&str: ParentElement` is not satisfied
+  --> tests/fail/error_positions.rs:8:13
+   |
+ 6 |       let _ = ui! {
+   |  _____________-
+ 7 | |         div {
+ 8 | |             "" {
+   | |             ^^ the trait `ParentElement` is not implemented for `&str`
+ 9 | |                 ""
+...  |
+12 | |     };
+   | |_____- required by a bound introduced by this call
+   |
+help: the following other types implement trait `ParentElement`
+  --> $CARGO/gpui-$VERSION/src/elements/anchored.rs
+   |
+   |   impl ParentElement for Anchored {
+   |   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ `Anchored`
+   |
+  ::: $CARGO/gpui-$VERSION/src/elements/image_cache.rs
+   |
+   |   impl ParentElement for ImageCacheElement {
+   |   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ `ImageCacheElement`
+   |
+  ::: $CARGO/gpui-$VERSION/src/elements/div.rs
+   |
+   |   impl ParentElement for Div {
+   |   ^^^^^^^^^^^^^^^^^^^^^^^^^^ `gpui::Div`
+...
+   | / impl<E> ParentElement for Stateful<E>
+   | | where
+   | |     E: ParentElement,
+   | |_____________________^ `Stateful<E>`
+
+error[E0277]: the trait bound `{integer}: IntoElement` is not satisfied
+  --> tests/fail/error_positions.rs:16:13
+   |
+14 |       let _ = ui! {
+   |  _____________-
+15 | |         deferred {
+16 | |             1
+   | |             ^ the trait `IntoElement` is not implemented for `{integer}`
+17 | |         }
+18 | |     };
+   | |_____- required by a bound introduced by this call
+   |
+   = help: the following other types implement trait `IntoElement`:
+             &'static str
+             Anchored
+             AnimationElement<E>
+             AnyElement
+             AnyView
+             Canvas<T>
+             Deferred
+             Entity<V>
+           and $N others
