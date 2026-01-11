@@ -4,8 +4,8 @@
 //!
 //! ```ignore
 //! ui! {
-//!     div { [flex, flex_col, w: px(200.0), bg: theme.secondary]
-//!         div { [text_size: px(16.0)]
+//!     div @[flex, flex_col, w: px(200.0), bg: theme.secondary] {
+//!         div @[text_size: px(16.0)] {
 //!             "Hello World",
 //!         },
 //!     }
@@ -46,8 +46,8 @@ use crate::ast::Markup;
 ///
 /// ```ignore
 /// ui! { div {} }                        // -> div()
-/// ui! { div { [flex] } }                // -> div().flex()
-/// ui! { div { [w: px(200.0)] } }        // -> div().w(px(200.0))
+/// ui! { div @[flex] {} }                // -> div().flex()
+/// ui! { div @[w: px(200.0)] {} }        // -> div().w(px(200.0))
 /// ```
 ///
 /// ## Children
@@ -114,10 +114,10 @@ use crate::ast::Markup;
 ///
 /// ```ignore
 /// ui! { Button::new("Click") {} }              // -> Button::new("Click")
-/// ui! { Button::new("Click") { [style: Primary] } }
+/// ui! { Button::new("Click") @[style: Primary] {} }
 ///                                              // -> Button::new("Click").style(Primary)
 /// ui! {
-///     div().flex() { [flex_col]
+///     div().flex() @[flex_col] {
 ///         "Content",
 ///     }
 /// }
@@ -132,7 +132,7 @@ use crate::ast::Markup;
 /// Use tuples for attributes with multiple arguments:
 ///
 /// ```ignore
-/// ui! { div { [when: (condition, |d| d.flex())] } }
+/// ui! { div @[when: (condition, |d| d.flex())] {} }
 /// // -> div().when(condition, |d| d.flex())
 /// ```
 #[proc_macro]

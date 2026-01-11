@@ -81,8 +81,7 @@ fn test_multiple_components() {
 #[test]
 fn test_expression_tag_with_children() {
     let _ = ui! {
-        div().flex() {
-            [flex_col]
+        div().flex() @[flex_col] {
             "Child content",
         }
     };
@@ -92,11 +91,9 @@ fn test_expression_tag_with_children() {
 #[test]
 fn test_mixed_components_and_divs() {
     let _ = ui! {
-        div {
-            [flex]
+        div @[flex] {
             Header {},
-            div {
-                [flex_col]
+            div @[flex_col] {
                 "Content",
             },
             Footer {},
@@ -108,10 +105,8 @@ fn test_mixed_components_and_divs() {
 #[test]
 fn test_nested_expression_tags() {
     let _ = ui! {
-        div().p(px(16.0)) {
-            [flex]
-            div().rounded_md() {
-                [flex_col]
+        div().p(px(16.0)) @[flex] {
+            div().rounded_md() @[flex_col] {
                 "Nested content",
             },
         }
@@ -132,6 +127,6 @@ fn test_component_with_children() {
 #[test]
 fn test_component_with_attributes() {
     let _ = ui! {
-        Header { [flex] }
+        Header @[flex] {}
     };
 }
