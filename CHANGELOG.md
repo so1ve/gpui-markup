@@ -7,6 +7,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.5.0](https://github.com/so1ve/gpui-markup/compare/v0.4.0...v0.5.0) - 2026-01-11
+
+### Added
+
+- notice why `{}` is required at top level in error message
+- [**breaking**] refined attributes syntax
+
+### Other
+
+- sync latest usage
+- update comments
+
 ## [0.4.0](https://github.com/so1ve/gpui-markup/compare/v0.3.0...v0.4.0) - 2026-01-10
 
 ### Added
