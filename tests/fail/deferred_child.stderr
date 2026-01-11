@@ -1,0 +1,11 @@
+error: deferred must have exactly one child
+ --> tests/fail/deferred_child.rs:5:19
+  |
+5 |     let _ = ui! { deferred {} };
+  |                   ^^^^^^^^
+
+error: deferred must have exactly one child
+ --> tests/fail/deferred_child.rs:8:9
+  |
+8 |         deferred {
+  |         ^^^^^^^^

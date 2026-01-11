@@ -28,24 +28,19 @@ impl ToTokens for Element {
 impl ToTokens for NativeElement {
     fn to_tokens(&self, tokens: &mut TokenStream) {
         let name = &self.name;
-        let mut output = quote! { #name() };
-
-        output = append_attributes(output, &self.attributes);
-        output = append_children(output, &self.children);
-
-        tokens.extend(output);
+        generate_element(quote! { #name() }, &self.attributes, &self.children, tokens);
     }
 }
 
 impl ToTokens for ComponentElement {
     fn to_tokens(&self, tokens: &mut TokenStream) {
         let name = &self.name;
-        let mut output = quote! { #name::new() };
-
-        output = append_attributes(output, &self.attributes);
-        output = append_children(output, &self.children);
-
-        tokens.extend(output);
+        generate_element(
+            quote! { #name::new() },
+            &self.attributes,
+            &self.children,
+            tokens,
+        );
     }
 }
 
@@ -55,52 +50,51 @@ impl ToTokens for DeferredElement {
         let child_tokens = match self.child.as_ref() {
             Child::Element(element) => quote! { #element },
             Child::Expression(expr) => quote! { #expr },
-            Child::Spread(_) | Child::MethodChain(_) => {
-                unreachable!("deferred only accepts Element or Expression")
-            }
+            _ => unreachable!("deferred only accepts Element or Expression"),
         };
-        let output = quote! { #name((#child_tokens).into_any_element()) };
-        tokens.extend(output);
+        tokens.extend(quote! { #name((#child_tokens).into_any_element()) });
     }
 }
 
 impl ToTokens for ExprElement {
     fn to_tokens(&self, tokens: &mut TokenStream) {
         let expr = &self.expr;
-        let mut output = append_attributes(quote! { #expr }, &self.attributes);
-        output = append_children(output, &self.children);
-        tokens.extend(output);
+        generate_element(quote! { #expr }, &self.attributes, &self.children, tokens);
     }
 }
 
-fn append_attributes(mut output: TokenStream, attributes: &[Attribute]) -> TokenStream {
-    for attr in attributes {
-        output = match attr {
-            Attribute::Flag(name) => quote! { #output.#name() },
-            Attribute::KeyValue { key, value } => {
-                // Check if value is a tuple - if so, expand its elements as separate arguments
-                if let syn::Expr::Tuple(tuple) = value {
-                    let elems = &tuple.elems;
-                    quote! { #output.#key(#elems) }
-                } else {
-                    quote! { #output.#key(#value) }
-                }
+fn generate_element(
+    base: TokenStream,
+    attributes: &[Attribute],
+    children: &[Child],
+    tokens: &mut TokenStream,
+) {
+    let mut output = append_attributes(base, attributes);
+    output = append_children(output, children);
+    tokens.extend(output);
+}
+
+fn append_attributes(output: TokenStream, attributes: &[Attribute]) -> TokenStream {
+    attributes.iter().fold(output, |acc, attr| match attr {
+        Attribute::Flag(name) => quote! { #acc.#name() },
+        Attribute::KeyValue { key, value } => {
+            if let syn::Expr::Tuple(tuple) = value {
+                let elems = &tuple.elems;
+                quote! { #acc.#key(#elems) }
+            } else {
+                quote! { #acc.#key(#value) }
             }
-        };
-    }
-    output
+        }
+    })
 }
 
-fn append_children(mut output: TokenStream, children: &[Child]) -> TokenStream {
-    for child in children {
-        output = match child {
-            Child::Element(element) => quote! { #output.child(#element) },
-            Child::Expression(expr) => quote! { #output.child(#expr) },
-            Child::Spread(expr) => quote! { #output.children(#expr) },
-            Child::MethodChain(tokens) => quote! { #output.#tokens },
-        };
-    }
-    output
+fn append_children(output: TokenStream, children: &[Child]) -> TokenStream {
+    children.iter().fold(output, |acc, child| match child {
+        Child::Element(element) => quote! { #acc.child(#element) },
+        Child::Expression(expr) => quote! { #acc.child(#expr) },
+        Child::Spread(expr) => quote! { #acc.children(#expr) },
+        Child::MethodChain(tokens) => quote! { #acc.#tokens },
+    })
 }
 
 #[cfg(test)]
