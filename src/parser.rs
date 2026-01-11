@@ -160,13 +160,14 @@ fn parse_optional_attributes(input: ParseStream) -> Result<Vec<Attribute>> {
         return Ok(vec![]);
     }
 
-    let fork = input.fork();
-    fork.parse::<Token![@]>()?;
-    if !fork.peek(Bracket) {
-        return Ok(vec![]);
-    }
+    let at_token: Token![@] = input.parse()?;
 
-    input.parse::<Token![@]>()?;
+    if !input.peek(Bracket) {
+        abort!(
+            at_token.span(),
+            "expected `[` after `@` for attributes, e.g. `@[attr1, attr2]`"
+        );
+    }
 
     let content;
     bracketed!(content in input);

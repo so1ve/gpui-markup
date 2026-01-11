@@ -1,0 +1,5 @@
+error: expected `[` after `@` for attributes, e.g. `@[attr1, attr2]`
+ --> tests/fail/missing_bracket_after_at.rs:5:13
+  |
+5 |         div @ {}
+  |             ^
