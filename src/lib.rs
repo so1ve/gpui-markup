@@ -15,16 +15,17 @@
 //! Which expands to:
 //!
 //! ```ignore
-//! div()
-//!     .flex()
-//!     .flex_col()
-//!     .w(px(200.0))
-//!     .bg(theme.secondary)
-//!     .child(
-//!         div()
-//!             .text_size(px(16.0))
-//!             .child("Hello World")
+//! gpui::ParentElement::child(
+//!     div()
+//!         .flex()
+//!         .flex_col()
+//!         .w(px(200.0))
+//!         .bg(theme.secondary),
+//!     gpui::ParentElement::child(
+//!         div().text_size(px(16.0)),
+//!         "Hello World"
 //!     )
+//! )
 //! ```
 
 mod ast;
@@ -60,7 +61,7 @@ use crate::ast::Markup;
 ///         "Second",
 ///     }
 /// }
-/// // -> div().child("First").child("Second")
+/// // -> gpui::ParentElement::child(gpui::ParentElement::child(div(), "First"), "Second")
 /// ```
 ///
 /// ## Spread Children
@@ -75,7 +76,7 @@ use crate::ast::Markup;
 ///         ..items,
 ///     }
 /// }
-/// // -> div().children(items)
+/// // -> gpui::ParentElement::children(div(), items)
 ///
 /// // Can be mixed with regular children
 /// ui! {
@@ -85,7 +86,13 @@ use crate::ast::Markup;
 ///         "Footer",
 ///     }
 /// }
-/// // -> div().child("Header").children(items).child("Footer")
+/// // -> gpui::ParentElement::child(
+/// //      gpui::ParentElement::children(
+/// //        gpui::ParentElement::child(div(), "Header"),
+/// //        items
+/// //      ),
+/// //      "Footer"
+/// //    )
 /// ```
 ///
 /// ## Method Chains
@@ -121,7 +128,7 @@ use crate::ast::Markup;
 ///         "Content",
 ///     }
 /// }
-/// // -> div().flex().flex_col().child("Content")
+/// // -> gpui::ParentElement::child(div().flex().flex_col(), "Content")
 ///
 /// // Parentheses for complex expressions (braces optional)
 /// ui! { (a + b) }                              // -> a + b
