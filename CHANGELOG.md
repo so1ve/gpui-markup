@@ -7,6 +7,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.5.3](https://github.com/so1ve/gpui-markup/compare/v0.5.2...v0.5.3) - 2026-01-31
+
+### Other
+
+- *(deps)* update rust crate insta to v1.46.2 ([#18](https://github.com/so1ve/gpui-markup/pull/18))
+- *(deps)* update rust crate trybuild to v1.0.115 ([#17](https://github.com/so1ve/gpui-markup/pull/17))
+- *(deps)* update rust crate quote to v1.0.44 ([#16](https://github.com/so1ve/gpui-markup/pull/16))
+- *(deps)* update rust crate proc-macro2 to v1.0.106 ([#15](https://github.com/so1ve/gpui-markup/pull/15))
+- *(deps)* update rust crate insta to v1.46.1 ([#13](https://github.com/so1ve/gpui-markup/pull/13))
+- *(deps)* lock file maintenance ([#12](https://github.com/so1ve/gpui-markup/pull/12))
+- rewrite parser logic for better readability
+
 ## [0.5.2](https://github.com/so1ve/gpui-markup/compare/v0.5.1...v0.5.2) - 2026-01-11
 
 ### Fixed

@@ -2136,7 +2136,7 @@ dependencies = [
 
 [[package]]
 name = "gpui-markup"
-version = "0.5.2"
+version = "0.5.3"
 dependencies = [
  "gpui",
  "insta",
