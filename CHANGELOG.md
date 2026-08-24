@@ -7,6 +7,51 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.5.3](https://github.com/so1ve/gpui-markup/compare/v0.5.2...v0.5.3) - 2026-08-24
+
+### Other
+
+- *(deps)* lock file maintenance ([#53](https://github.com/so1ve/gpui-markup/pull/53))
+- *(deps)* lock file maintenance ([#52](https://github.com/so1ve/gpui-markup/pull/52))
+- *(deps)* lock file maintenance ([#51](https://github.com/so1ve/gpui-markup/pull/51))
+- *(deps)* update rust crate trybuild to v1.0.120 ([#50](https://github.com/so1ve/gpui-markup/pull/50))
+- *(deps)* lock file maintenance ([#49](https://github.com/so1ve/gpui-markup/pull/49))
+- *(deps)* update rust crate trybuild to v1.0.119 ([#48](https://github.com/so1ve/gpui-markup/pull/48))
+- *(deps)* lock file maintenance ([#47](https://github.com/so1ve/gpui-markup/pull/47))
+- *(deps)* update all non-major dependencies to v1.0.107 ([#45](https://github.com/so1ve/gpui-markup/pull/45))
+- *(deps)* update rust crate syn to v2.0.119 ([#44](https://github.com/so1ve/gpui-markup/pull/44))
+- *(deps)* lock file maintenance ([#43](https://github.com/so1ve/gpui-markup/pull/43))
+- *(deps)* update rust crate trybuild to v1.0.118 ([#42](https://github.com/so1ve/gpui-markup/pull/42))
+- *(deps)* lock file maintenance ([#41](https://github.com/so1ve/gpui-markup/pull/41))
+- *(deps)* lock file maintenance ([#40](https://github.com/so1ve/gpui-markup/pull/40))
+- *(deps)* update all non-major dependencies to v1.0.46 ([#39](https://github.com/so1ve/gpui-markup/pull/39))
+- *(deps)* lock file maintenance ([#38](https://github.com/so1ve/gpui-markup/pull/38))
+- *(deps)* update all non-major dependencies to v2.0.118 ([#37](https://github.com/so1ve/gpui-markup/pull/37))
+- *(deps)* lock file maintenance ([#36](https://github.com/so1ve/gpui-markup/pull/36))
+- *(deps)* update all non-major dependencies to v1.48.0 ([#35](https://github.com/so1ve/gpui-markup/pull/35))
+- *(deps)* lock file maintenance ([#34](https://github.com/so1ve/gpui-markup/pull/34))
+- *(deps)* lock file maintenance ([#33](https://github.com/so1ve/gpui-markup/pull/33))
+- *(deps)* lock file maintenance ([#32](https://github.com/so1ve/gpui-markup/pull/32))
+- *(deps)* lock file maintenance ([#30](https://github.com/so1ve/gpui-markup/pull/30))
+- *(deps)* update rust crate insta to v1.47.1 ([#29](https://github.com/so1ve/gpui-markup/pull/29))
+- *(deps)* update rust crate insta to v1.47.0 ([#28](https://github.com/so1ve/gpui-markup/pull/28))
+- *(deps)* lock file maintenance ([#27](https://github.com/so1ve/gpui-markup/pull/27))
+- *(deps)* lock file maintenance ([#26](https://github.com/so1ve/gpui-markup/pull/26))
+- *(deps)* lock file maintenance ([#14](https://github.com/so1ve/gpui-markup/pull/14))
+- *(deps)* update rust crate quote to v1.0.45 ([#25](https://github.com/so1ve/gpui-markup/pull/25))
+- *(deps)* update rust crate syn to v2.0.117 ([#24](https://github.com/so1ve/gpui-markup/pull/24))
+- *(deps)* update rust crate syn to v2.0.116 ([#23](https://github.com/so1ve/gpui-markup/pull/23))
+- *(deps)* update all non-major dependencies ([#22](https://github.com/so1ve/gpui-markup/pull/22))
+- *(deps)* update rust crate insta to v1.46.3 ([#20](https://github.com/so1ve/gpui-markup/pull/20))
+- *(deps)* update autofix-ci/action digest to 7a166d7 ([#19](https://github.com/so1ve/gpui-markup/pull/19))
+- *(deps)* update rust crate insta to v1.46.2 ([#18](https://github.com/so1ve/gpui-markup/pull/18))
+- *(deps)* update rust crate trybuild to v1.0.115 ([#17](https://github.com/so1ve/gpui-markup/pull/17))
+- *(deps)* update rust crate quote to v1.0.44 ([#16](https://github.com/so1ve/gpui-markup/pull/16))
+- *(deps)* update rust crate proc-macro2 to v1.0.106 ([#15](https://github.com/so1ve/gpui-markup/pull/15))
+- *(deps)* update rust crate insta to v1.46.1 ([#13](https://github.com/so1ve/gpui-markup/pull/13))
+- *(deps)* lock file maintenance ([#12](https://github.com/so1ve/gpui-markup/pull/12))
+- rewrite parser logic for better readability
+
 ## [0.5.2](https://github.com/so1ve/gpui-markup/compare/v0.5.1...v0.5.2) - 2026-01-11
 
 ### Fixed
