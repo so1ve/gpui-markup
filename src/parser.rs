@@ -79,15 +79,16 @@ fn parse_element_head(input: ParseStream) -> Result<ElementHead> {
         // If not followed by element suffix, check if we need to parse as
         // expression
         if !has_element_suffix {
-            // For known elements (native/deferred/component), check if it's actually an
-            // expression
+            // For known elements (native/deferred/component), check if it's
+            // actually an expression
             let is_known = NATIVE_ELEMENTS.contains(&name.as_str())
                 || name == "deferred"
                 || name.starts_with(char::is_uppercase);
 
             if !is_known || can_continue_as_expr(&fork) {
-                // For unknown lowercase idents or known elements with expression continuation,
-                // parse as full expression. This handles cases like `text.method()`, `foo()`,
+                // For unknown lowercase idents or known elements with
+                // expression continuation, parse as full
+                // expression. This handles cases like `text.method()`, `foo()`,
                 // `div()`, etc.
                 let expr: Expr = input.parse()?;
                 return Ok(ElementHead::Expression(expr));
