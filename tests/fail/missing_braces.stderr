@@ -1,32 +1,32 @@
 error: top-level element requires braces, e.g. `expr @[attrs] { children }`
        note: braces declare this as a UI element in the component tree, not just an expression
- --> tests/fail/missing_braces.rs:5:9
-  |
-5 |         div
-  |         ^^^
+  --> tests/fail/missing_braces.rs:14:9
+   |
+14 |         div
+   |         ^^^
 
 error: element requires braces: `{}`
- --> tests/fail/missing_braces.rs:9:13
-  |
-9 |             div
-  |             ^^^
+  --> tests/fail/missing_braces.rs:18:13
+   |
+18 |             div
+   |             ^^^
 
 error: top-level element requires braces, e.g. `expr @[attrs] { children }`
        note: braces declare this as a UI element in the component tree, not just an expression
-  --> tests/fail/missing_braces.rs:13:9
+  --> tests/fail/missing_braces.rs:22:9
    |
-13 |         div @[]
+22 |         div @[]
    |         ^^^
 
 error: top-level element requires braces, e.g. `expr @[attrs] { children }`
        note: braces declare this as a UI element in the component tree, not just an expression
-  --> tests/fail/missing_braces.rs:16:9
+  --> tests/fail/missing_braces.rs:25:9
    |
-16 |         Header
+25 |         Header
    |         ^^^^^^
 
 error: element requires braces: `{}`
-  --> tests/fail/missing_braces.rs:20:13
+  --> tests/fail/missing_braces.rs:29:13
    |
-20 |             Header
+29 |             Header
    |             ^^^^^^

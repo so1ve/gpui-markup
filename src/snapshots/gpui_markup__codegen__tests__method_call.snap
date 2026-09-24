@@ -3,5 +3,15 @@ source: src/codegen.rs
 expression: "generate(quote::quote!\n{ div { \"static\", .when(cond, |d| d.child(\"dynamic\")), } })"
 ---
 fn __wrapper() {
-    gpui::ParentElement::child(div(), "static").when(cond, |d| d.child("dynamic"))
+    {
+        let __gpui_markup_element = div();
+        let __child = "static";
+        let __gpui_markup_element = gpui::ParentElement::child(
+            __gpui_markup_element,
+            __child,
+        );
+        let __gpui_markup_element = __gpui_markup_element
+            .when(cond, |d| d.child("dynamic"));
+        __gpui_markup_element
+    }
 }

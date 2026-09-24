@@ -1,4 +1,7 @@
 //! AST definitions for gpui-markup DSL.
+//!
+//! Optional child lists preserve the difference between an absent body and an
+//! explicitly empty body, which code generation needs for editor completion.
 
 use proc_macro2::TokenStream;
 use syn::{Expr, Ident};
@@ -7,6 +10,7 @@ use syn::{Expr, Ident};
 #[derive(Debug)]
 pub struct Markup {
     pub element: Element,
+    pub errors: Vec<syn::Error>,
 }
 
 /// An element in the markup tree.
@@ -27,20 +31,20 @@ pub enum Element {
 pub struct NativeElement {
     pub name: Ident,
     pub attributes: Vec<Attribute>,
-    pub children: Vec<Child>,
+    pub children: Option<Vec<Child>>,
 }
 
 #[derive(Debug)]
 pub struct ComponentElement {
     pub name: Ident,
     pub attributes: Vec<Attribute>,
-    pub children: Vec<Child>,
+    pub children: Option<Vec<Child>>,
 }
 
 #[derive(Debug)]
 pub struct DeferredElement {
     pub name: Ident,
-    pub child: Box<Child>,
+    pub child: Box<Element>,
 }
 
 /// An expression used as an element.
@@ -48,7 +52,7 @@ pub struct DeferredElement {
 pub struct ExprElement {
     pub expr: Expr,
     pub attributes: Vec<Attribute>,
-    pub children: Vec<Child>,
+    pub children: Option<Vec<Child>>,
 }
 
 /// An attribute on an element.

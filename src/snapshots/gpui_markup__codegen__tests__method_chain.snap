@@ -3,5 +3,9 @@ source: src/codegen.rs
 expression: "generate(quote::quote! { div { .flex().flex_col().gap_2(), } })"
 ---
 fn __wrapper() {
-    div().flex().flex_col().gap_2()
+    {
+        let __gpui_markup_element = div();
+        let __gpui_markup_element = __gpui_markup_element.flex().flex_col().gap_2();
+        __gpui_markup_element
+    }
 }

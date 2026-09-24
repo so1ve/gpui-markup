@@ -1,76 +1,115 @@
 //! Code generation for gpui-markup DSL.
 
-use proc_macro2::TokenStream;
+use proc_macro2::{Span, TokenStream};
 use quote::{ToTokens, quote};
+use syn::Ident;
+use syn::spanned::Spanned;
 
-use crate::ast::{
-    Attribute, Child, ComponentElement, DeferredElement, Element, ExprElement, Markup,
-    NativeElement,
-};
+use crate::ast::{Attribute, Child, Element, Markup};
 
 impl ToTokens for Markup {
     fn to_tokens(&self, tokens: &mut TokenStream) {
-        self.element.to_tokens(tokens);
+        tokens.extend(generate_element(&self.element, &self.errors));
     }
 }
 
-impl ToTokens for Element {
-    fn to_tokens(&self, tokens: &mut TokenStream) {
-        match self {
-            Self::Native(el) => el.to_tokens(tokens),
-            Self::Component(el) => el.to_tokens(tokens),
-            Self::Deferred(el) => el.to_tokens(tokens),
-            Self::Expression(expr) => expr.to_tokens(tokens),
+fn element_span(element: &Element) -> Span {
+    match element {
+        Element::Native(el) => el.name.span(),
+        Element::Component(el) => el.name.span(),
+        Element::Deferred(el) => el.name.span(),
+        Element::Expression(el) => el.expr.span(),
+    }
+}
+
+fn generate_element(element: &Element, errors: &[syn::Error]) -> TokenStream {
+    let (base, attributes, children) = match element {
+        Element::Native(el) => {
+            let name = &el.name;
+
+            (
+                quote! { #name() },
+                el.attributes.as_slice(),
+                el.children.as_deref(),
+            )
         }
-    }
-}
+        Element::Component(el) => {
+            let name = &el.name;
 
-impl ToTokens for NativeElement {
-    fn to_tokens(&self, tokens: &mut TokenStream) {
-        let name = &self.name;
-        generate_element(quote! { #name() }, &self.attributes, &self.children, tokens);
-    }
-}
+            (
+                quote! { #name::new() },
+                el.attributes.as_slice(),
+                el.children.as_deref(),
+            )
+        }
+        Element::Expression(el) => {
+            let expr = &el.expr;
 
-impl ToTokens for ComponentElement {
-    fn to_tokens(&self, tokens: &mut TokenStream) {
-        let name = &self.name;
-        generate_element(
-            quote! { #name::new() },
-            &self.attributes,
-            &self.children,
-            tokens,
-        );
-    }
-}
+            (
+                quote! { #expr },
+                el.attributes.as_slice(),
+                el.children.as_deref(),
+            )
+        }
+        Element::Deferred(el) => {
+            let name = &el.name;
+            let child = generate_element(&el.child, &[]);
 
-impl ToTokens for DeferredElement {
-    fn to_tokens(&self, tokens: &mut TokenStream) {
-        let name = &self.name;
-        let child_tokens = match self.child.as_ref() {
-            Child::Element(element) => quote! { #element },
-            _ => unreachable!("deferred only accepts Element children"),
-        };
-        tokens.extend(quote! { #name(gpui::IntoElement::into_any_element(#child_tokens)) });
+            (
+                quote! { #name(gpui::IntoElement::into_any_element(#child)) },
+                &[][..],
+                None,
+            )
+        }
+    };
+    let base = append_attributes(base, attributes);
+    // A bare child expression stays bare. A body, even an empty one, gets a
+    // block so adding its first child does not change the preceding expansion.
+    if children.is_none() && errors.is_empty() {
+        return base;
     }
-}
+    // Keep the expansion in source order: adding a child must not insert a
+    // UFCS prefix ahead of every earlier token. rust-analyzer compares the
+    // normal expansion with one containing a completion identifier.
+    let value = Ident::new(
+        "__gpui_markup_element",
+        Span::mixed_site().located_at(element_span(element)),
+    );
+    let children = children.into_iter().flatten().map(|child| match child {
+        Child::Element(element) => {
+            let child_value = Ident::new(
+                "__child",
+                Span::mixed_site().located_at(element_span(element)),
+            );
+            let element = generate_element(element, &[]);
 
-impl ToTokens for ExprElement {
-    fn to_tokens(&self, tokens: &mut TokenStream) {
-        let expr = &self.expr;
-        generate_element(quote! { #expr }, &self.attributes, &self.children, tokens);
-    }
-}
+            quote! {
+                let #child_value = #element;
+                let #value = gpui::ParentElement::child(#value, #child_value);
+            }
+        }
+        Child::Spread(expr) => {
+            let child_value = Ident::new("__child", Span::mixed_site().located_at(expr.span()));
 
-fn generate_element(
-    base: TokenStream,
-    attributes: &[Attribute],
-    children: &[Child],
-    tokens: &mut TokenStream,
-) {
-    let mut output = append_attributes(base, attributes);
-    output = append_children(output, children);
-    tokens.extend(output);
+            quote! {
+                let #child_value = #expr;
+                let #value = gpui::ParentElement::children(#value, #child_value);
+            }
+        }
+        Child::MethodChain(chain) => quote! {
+            let #value = #value.#chain;
+        },
+    });
+    let errors = errors.iter().map(syn::Error::to_compile_error);
+
+    // Emit diagnostics after the tree so an unfinished node does not shift
+    // the source tokens or erase the expression used for completion.
+    quote! {{
+        let #value = #base;
+        #(#children)*
+        #(#errors)*
+        #value
+    }}
 }
 
 fn append_attributes(output: TokenStream, attributes: &[Attribute]) -> TokenStream {
@@ -79,19 +118,12 @@ fn append_attributes(output: TokenStream, attributes: &[Attribute]) -> TokenStre
         Attribute::KeyValue { key, value } => {
             if let syn::Expr::Tuple(tuple) = value {
                 let elems = &tuple.elems;
+
                 quote! { #acc.#key(#elems) }
             } else {
                 quote! { #acc.#key(#value) }
             }
         }
-    })
-}
-
-fn append_children(output: TokenStream, children: &[Child]) -> TokenStream {
-    children.iter().fold(output, |acc, child| match child {
-        Child::Element(element) => quote! { gpui::ParentElement::child(#acc, #element) },
-        Child::Spread(expr) => quote! { gpui::ParentElement::children(#acc, #expr) },
-        Child::MethodChain(tokens) => quote! { #acc.#tokens },
     })
 }
 
@@ -106,6 +138,7 @@ mod tests {
         let markup: Markup = syn::parse2(input).unwrap();
         let output = quote! { fn __wrapper() { #markup } };
         let syntax_tree = syn::parse_file(&output.to_string()).unwrap();
+
         prettyplease::unparse(&syntax_tree)
     }
 

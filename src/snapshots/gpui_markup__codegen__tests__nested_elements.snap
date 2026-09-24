@@ -3,5 +3,21 @@ source: src/codegen.rs
 expression: "generate(quote::quote! { div @[flex] { div { \"Inner\" }, } })"
 ---
 fn __wrapper() {
-    gpui::ParentElement::child(div().flex(), gpui::ParentElement::child(div(), "Inner"))
+    {
+        let __gpui_markup_element = div().flex();
+        let __child = {
+            let __gpui_markup_element = div();
+            let __child = "Inner";
+            let __gpui_markup_element = gpui::ParentElement::child(
+                __gpui_markup_element,
+                __child,
+            );
+            __gpui_markup_element
+        };
+        let __gpui_markup_element = gpui::ParentElement::child(
+            __gpui_markup_element,
+            __child,
+        );
+        __gpui_markup_element
+    }
 }

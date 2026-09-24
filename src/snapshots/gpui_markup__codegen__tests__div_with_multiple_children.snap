@@ -3,5 +3,18 @@ source: src/codegen.rs
 expression: "generate(quote::quote! { div { \"First\", \"Second\", } })"
 ---
 fn __wrapper() {
-    gpui::ParentElement::child(gpui::ParentElement::child(div(), "First"), "Second")
+    {
+        let __gpui_markup_element = div();
+        let __child = "First";
+        let __gpui_markup_element = gpui::ParentElement::child(
+            __gpui_markup_element,
+            __child,
+        );
+        let __child = "Second";
+        let __gpui_markup_element = gpui::ParentElement::child(
+            __gpui_markup_element,
+            __child,
+        );
+        __gpui_markup_element
+    }
 }

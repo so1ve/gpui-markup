@@ -16,4 +16,10 @@ fn main() {
             1
         }
     };
+    // Should fail at the child expression, not at a generated binding.
+    let _ = ui! {
+        div {
+            1
+        }
+    };
 }

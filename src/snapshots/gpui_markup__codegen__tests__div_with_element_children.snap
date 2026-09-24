@@ -3,8 +3,34 @@ source: src/codegen.rs
 expression: "generate(quote::quote! { div { div { \"First\" }, div { \"Second\" }, } })"
 ---
 fn __wrapper() {
-    gpui::ParentElement::child(
-        gpui::ParentElement::child(div(), gpui::ParentElement::child(div(), "First")),
-        gpui::ParentElement::child(div(), "Second"),
-    )
+    {
+        let __gpui_markup_element = div();
+        let __child = {
+            let __gpui_markup_element = div();
+            let __child = "First";
+            let __gpui_markup_element = gpui::ParentElement::child(
+                __gpui_markup_element,
+                __child,
+            );
+            __gpui_markup_element
+        };
+        let __gpui_markup_element = gpui::ParentElement::child(
+            __gpui_markup_element,
+            __child,
+        );
+        let __child = {
+            let __gpui_markup_element = div();
+            let __child = "Second";
+            let __gpui_markup_element = gpui::ParentElement::child(
+                __gpui_markup_element,
+                __child,
+            );
+            __gpui_markup_element
+        };
+        let __gpui_markup_element = gpui::ParentElement::child(
+            __gpui_markup_element,
+            __child,
+        );
+        __gpui_markup_element
+    }
 }

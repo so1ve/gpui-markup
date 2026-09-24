@@ -339,7 +339,7 @@ ui! {
 
 The `ui!` macro transforms the markup syntax into GPUI's builder pattern at compile time:
 
-| Markup | Generated Code |
+| Markup | Equivalent Builder Code |
 |--------|----------------|
 | `div {}` | `div()` |
 | `div @[flex] {}` | `div().flex()` |

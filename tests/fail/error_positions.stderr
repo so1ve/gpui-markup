@@ -31,6 +31,7 @@ help: the following other types implement trait `ParentElement`
    | | where
    | |     E: ParentElement,
    | |_____________________^ `Stateful<E>`
+   = note: this error originates in the macro `ui` (in Nightly builds, run with -Z macro-backtrace for more info)
 
 error[E0277]: the trait bound `{integer}: IntoElement` is not satisfied
   --> tests/fail/error_positions.rs:16:13
@@ -54,3 +55,34 @@ error[E0277]: the trait bound `{integer}: IntoElement` is not satisfied
              Deferred
              Entity<V>
            and $N others
+
+error[E0277]: the trait bound `{integer}: IntoElement` is not satisfied
+  --> tests/fail/error_positions.rs:22:13
+   |
+20 |       let _ = ui! {
+   |  _____________-
+21 | |         div {
+22 | |             1
+   | |             ^ the trait `IntoElement` is not implemented for `{integer}`
+23 | |         }
+24 | |     };
+   | |_____- required by a bound introduced by this call
+   |
+   = help: the following other types implement trait `IntoElement`:
+             &'static str
+             Anchored
+             AnimationElement<E>
+             AnyElement
+             AnyView
+             Canvas<T>
+             Deferred
+             Entity<V>
+           and $N others
+note: required by a bound in `child`
+  --> $CARGO/gpui-$VERSION/src/element.rs
+   |
+   | pub trait ParentElement {
+...
+   |     fn child(mut self, child: impl IntoElement) -> Self
+   |                                    ^^^^^^^^^^^ required by this bound in `ParentElement::child`
+   = note: this error originates in the macro `ui` (in Nightly builds, run with -Z macro-backtrace for more info)

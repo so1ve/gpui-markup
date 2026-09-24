@@ -1,7 +1,10 @@
 ---
 source: src/codegen.rs
-expression: "generate(quote::quote! { <div when={is_visible, |d| d.flex()}/> })"
+expression: "generate(quote::quote! { div @[when: (is_visible, |d| d.flex())] {} })"
 ---
 fn __wrapper() {
-    div().when(is_visible, |d| d.flex())
+    {
+        let __gpui_markup_element = div().when(is_visible, |d| d.flex());
+        __gpui_markup_element
+    }
 }

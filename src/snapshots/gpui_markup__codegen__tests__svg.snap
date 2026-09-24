@@ -1,7 +1,10 @@
 ---
 source: src/codegen.rs
-expression: "generate(quote::quote! { <svg path={icon_path} size={px(24.0)}/> })"
+expression: "generate(quote::quote! { svg @[path: icon_path, size: px(24.0)] {} })"
 ---
 fn __wrapper() {
-    svg().path(icon_path).size(px(24.0))
+    {
+        let __gpui_markup_element = svg().path(icon_path).size(px(24.0));
+        __gpui_markup_element
+    }
 }

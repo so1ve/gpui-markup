@@ -10,4 +10,7 @@ fn main() {
             "2",
         }
     };
+    // A single spread or method chain is not an element child.
+    let _ = ui! { deferred { ..items } };
+    let _ = ui! { deferred { .flex() } };
 }

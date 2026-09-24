@@ -309,3 +309,41 @@ fn test_nested_closures_with_params() {
         }
     };
 }
+
+#[test]
+fn test_evaluation_order_with_changing_builder_type() {
+    let events = std::cell::RefCell::new(Vec::new());
+    let _ = ui! {
+        ({ events.borrow_mut().push("root"); div() }) @[
+            when: (true, |element| {
+                events.borrow_mut().push("attribute");
+                element
+            }),
+        ] {
+            { events.borrow_mut().push("child"); div() },
+            ..{ events.borrow_mut().push("spread"); [div()] },
+            .when(true, |element| {
+                events.borrow_mut().push("chain");
+                element
+            }).id("stateful"),
+            { events.borrow_mut().push("last"); div() },
+        }
+    };
+    assert_eq!(
+        *events.borrow(),
+        ["root", "attribute", "child", "spread", "chain", "last"]
+    );
+}
+
+#[test]
+fn test_generated_bindings_do_not_capture_caller_variables() {
+    let __gpui_markup_element = "outer element";
+    let __child = "outer child";
+    let _ = ui! {
+        div {
+            __gpui_markup_element,
+            div { __child },
+            __child,
+        }
+    };
+}

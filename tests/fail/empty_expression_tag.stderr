@@ -1,6 +1,6 @@
 error: top-level element requires braces, e.g. `expr @[attrs] { children }`
        note: braces declare this as a UI element in the component tree, not just an expression
- --> tests/fail/empty_expression_tag.rs:5:19
-  |
-5 |     let _ = ui! { Button::new() };
-  |                   ^^^^^^^^^^^^^
+  --> tests/fail/empty_expression_tag.rs:13:19
+   |
+13 |     let _ = ui! { Button::new() };
+   |                   ^^^^^^^^^^^^^

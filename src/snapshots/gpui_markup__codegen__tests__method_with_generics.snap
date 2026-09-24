@@ -3,5 +3,9 @@ source: src/codegen.rs
 expression: "generate(quote::quote! { div { .map::<Div, _>(|d| d), } })"
 ---
 fn __wrapper() {
-    div().map::<Div, _>(|d| d)
+    {
+        let __gpui_markup_element = div();
+        let __gpui_markup_element = __gpui_markup_element.map::<Div, _>(|d| d);
+        __gpui_markup_element
+    }
 }

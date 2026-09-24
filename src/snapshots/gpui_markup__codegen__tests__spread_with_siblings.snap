@@ -3,11 +3,23 @@ source: src/codegen.rs
 expression: "generate(quote::quote! { div { \"Header\", ..items, \"Footer\", } })"
 ---
 fn __wrapper() {
-    gpui::ParentElement::child(
-        gpui::ParentElement::children(
-            gpui::ParentElement::child(div(), "Header"),
-            items,
-        ),
-        "Footer",
-    )
+    {
+        let __gpui_markup_element = div();
+        let __child = "Header";
+        let __gpui_markup_element = gpui::ParentElement::child(
+            __gpui_markup_element,
+            __child,
+        );
+        let __child = items;
+        let __gpui_markup_element = gpui::ParentElement::children(
+            __gpui_markup_element,
+            __child,
+        );
+        let __child = "Footer";
+        let __gpui_markup_element = gpui::ParentElement::child(
+            __gpui_markup_element,
+            __child,
+        );
+        __gpui_markup_element
+    }
 }

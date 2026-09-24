@@ -12,7 +12,7 @@
 //! }
 //! ```
 //!
-//! Which expands to:
+//! Which is equivalent to:
 //!
 //! ```ignore
 //! gpui::ParentElement::child(
@@ -33,7 +33,6 @@ mod codegen;
 mod parser;
 
 use proc_macro::TokenStream;
-use proc_macro_error2::proc_macro_error;
 use quote::quote;
 use syn::parse_macro_input;
 
@@ -148,9 +147,9 @@ use crate::ast::Markup;
 /// // -> div().when(condition, |d| d.flex())
 /// ```
 #[proc_macro]
-#[proc_macro_error]
 pub fn ui(input: TokenStream) -> TokenStream {
     let markup = parse_macro_input!(input as Markup);
     let output = quote! { #markup };
+
     output.into()
 }

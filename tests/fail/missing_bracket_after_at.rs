@@ -1,3 +1,4 @@
+use gpui::div;
 use gpui_markup::ui;
 
 fn main() {

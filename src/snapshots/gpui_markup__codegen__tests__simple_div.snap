@@ -1,7 +1,10 @@
 ---
 source: src/codegen.rs
-expression: "generate(quote::quote! { <div/> })"
+expression: "generate(quote::quote! { div {} })"
 ---
 fn __wrapper() {
-    div()
+    {
+        let __gpui_markup_element = div();
+        __gpui_markup_element
+    }
 }

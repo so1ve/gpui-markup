@@ -3,8 +3,21 @@ source: src/codegen.rs
 expression: "generate(quote::quote!\n{ anchored @[position: Point::default()] { div { \"Tooltip\" }, } })"
 ---
 fn __wrapper() {
-    gpui::ParentElement::child(
-        anchored().position(Point::default()),
-        gpui::ParentElement::child(div(), "Tooltip"),
-    )
+    {
+        let __gpui_markup_element = anchored().position(Point::default());
+        let __child = {
+            let __gpui_markup_element = div();
+            let __child = "Tooltip";
+            let __gpui_markup_element = gpui::ParentElement::child(
+                __gpui_markup_element,
+                __child,
+            );
+            __gpui_markup_element
+        };
+        let __gpui_markup_element = gpui::ParentElement::child(
+            __gpui_markup_element,
+            __child,
+        );
+        __gpui_markup_element
+    }
 }

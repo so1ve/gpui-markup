@@ -1,7 +1,10 @@
 ---
 source: src/codegen.rs
-expression: "generate(quote::quote! { Header [flex, style: Primary] })"
+expression: "generate(quote::quote! { Header @[flex, style: Primary] {} })"
 ---
 fn __wrapper() {
-    Header::new().flex().style(Primary)
+    {
+        let __gpui_markup_element = Header::new().flex().style(Primary);
+        __gpui_markup_element
+    }
 }

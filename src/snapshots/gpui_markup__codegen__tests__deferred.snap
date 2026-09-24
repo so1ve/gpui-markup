@@ -4,8 +4,14 @@ expression: "generate(quote::quote! { deferred { div { \"Deferred content\" }, }
 ---
 fn __wrapper() {
     deferred(
-        gpui::IntoElement::into_any_element(
-            gpui::ParentElement::child(div(), "Deferred content"),
-        ),
+        gpui::IntoElement::into_any_element({
+            let __gpui_markup_element = div();
+            let __child = "Deferred content";
+            let __gpui_markup_element = gpui::ParentElement::child(
+                __gpui_markup_element,
+                __child,
+            );
+            __gpui_markup_element
+        }),
     )
 }

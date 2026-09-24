@@ -1,0 +1,7 @@
+error: unexpected end of input, expected a UI element
+ --> tests/fail/empty_markup.rs:4:13
+  |
+4 |     let _ = ui! {};
+  |             ^^^^^^
+  |
+  = note: this error originates in the macro `ui` (in Nightly builds, run with -Z macro-backtrace for more info)

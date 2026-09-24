@@ -3,8 +3,24 @@ source: src/codegen.rs
 expression: "generate(quote::quote! { div { Header @[flex] {}, Footer {}, } })"
 ---
 fn __wrapper() {
-    gpui::ParentElement::child(
-        gpui::ParentElement::child(div(), Header::new().flex()),
-        Footer::new(),
-    )
+    {
+        let __gpui_markup_element = div();
+        let __child = {
+            let __gpui_markup_element = Header::new().flex();
+            __gpui_markup_element
+        };
+        let __gpui_markup_element = gpui::ParentElement::child(
+            __gpui_markup_element,
+            __child,
+        );
+        let __child = {
+            let __gpui_markup_element = Footer::new();
+            __gpui_markup_element
+        };
+        let __gpui_markup_element = gpui::ParentElement::child(
+            __gpui_markup_element,
+            __child,
+        );
+        __gpui_markup_element
+    }
 }

@@ -1,11 +1,23 @@
-error: deferred must have exactly one child
+error: deferred must have exactly one element child
  --> tests/fail/deferred_child.rs:5:19
   |
 5 |     let _ = ui! { deferred {} };
   |                   ^^^^^^^^
 
-error: deferred must have exactly one child
+error: deferred must have exactly one element child
  --> tests/fail/deferred_child.rs:8:9
   |
 8 |         deferred {
   |         ^^^^^^^^
+
+error: deferred must have exactly one element child
+  --> tests/fail/deferred_child.rs:14:19
+   |
+14 |     let _ = ui! { deferred { ..items } };
+   |                   ^^^^^^^^
+
+error: deferred must have exactly one element child
+  --> tests/fail/deferred_child.rs:15:19
+   |
+15 |     let _ = ui! { deferred { .flex() } };
+   |                   ^^^^^^^^

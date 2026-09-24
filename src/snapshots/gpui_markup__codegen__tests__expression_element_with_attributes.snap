@@ -1,7 +1,10 @@
 ---
 source: src/codegen.rs
-expression: "generate(quote::quote! { <{Container::new(title)} flex/> })"
+expression: "generate(quote::quote! { Container::new(title) @[flex] {} })"
 ---
 fn __wrapper() {
-    Container::new(title).flex()
+    {
+        let __gpui_markup_element = Container::new(title).flex();
+        __gpui_markup_element
+    }
 }

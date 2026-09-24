@@ -1,7 +1,10 @@
 ---
 source: src/codegen.rs
-expression: "generate(quote::quote! { <div flex flex_col/> })"
+expression: "generate(quote::quote! { div @[flex, flex_col] {} })"
 ---
 fn __wrapper() {
-    div().flex().flex_col()
+    {
+        let __gpui_markup_element = div().flex().flex_col();
+        __gpui_markup_element
+    }
 }
