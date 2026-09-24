@@ -1,0 +1,15 @@
+[package]
+name = "gpui-markup-gpui-kit-tests"
+version = "0.0.0"
+edition = "2024"
+publish = false
+
+[workspace]
+
+[dependencies]
+gpui-kit = "0.6.6"
+gpui-markup = { path = "../../.." }
+
+[[test]]
+name = "compatibility"
+path = "compatibility.rs"

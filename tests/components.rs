@@ -1,6 +1,9 @@
 //! Component tests for gpui-markup.
 
-use gpui::{App, IntoElement, ParentElement, RenderOnce, Styled, Window, div, px};
+use gpui::{
+    App, Context, InteractiveElement, IntoElement, ParentElement, Render, RenderOnce,
+    StatefulInteractiveElement, Styled, Window, div, px,
+};
 use gpui_markup::ui;
 
 #[derive(IntoElement)]
@@ -129,4 +132,26 @@ fn test_component_with_attributes() {
     let _ = ui! {
         Header @[flex] {}
     };
+}
+
+#[test]
+fn test_markup_in_render_with_listener() {
+    struct View;
+
+    impl Render for View {
+        fn render(&mut self, _: &mut Window, cx: &mut Context<Self>) -> impl IntoElement {
+            ui! {
+                div @[
+                    id: "view",
+                    flex,
+                    on_click: cx.listener(|_, _, _, cx| cx.notify()),
+                ] {
+                    Header {},
+                    "Content",
+                }
+            }
+        }
+    }
+
+    let _ = View;
 }

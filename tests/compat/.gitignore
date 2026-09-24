@@ -1,0 +1,3 @@
+# Resolve current dependencies in each CI checkout.
+/*/Cargo.lock
+/*/target/

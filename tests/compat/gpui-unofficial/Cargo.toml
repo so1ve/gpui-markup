@@ -1,0 +1,23 @@
+[package]
+name = "gpui-markup-gpui-unofficial-tests"
+version = "0.0.0"
+edition = "2024"
+publish = false
+
+[workspace]
+
+[dependencies]
+gpui = { package = "gpui-unofficial", version = "1.21.0-pre" }
+gpui-markup = { path = "../../.." }
+
+[[test]]
+name = "basic"
+path = "../../basic.rs"
+
+[[test]]
+name = "components"
+path = "../../components.rs"
+
+[[test]]
+name = "dynamic"
+path = "../../dynamic.rs"

@@ -8,19 +8,63 @@ A declarative markup DSL for building [GPUI](https://gpui.rs) applications.
 cargo add gpui-markup
 ```
 
+### GPUI versions
+
+`gpui-markup` generates builder calls and does not depend on a specific GPUI runtime.
+
+For the current `gpui-unofficial` prerelease, rename the dependency to `gpui`:
+
+```toml
+[dependencies]
+gpui = { package = "gpui-unofficial", version = "1.21.0-pre" }
+gpui-markup = "0.5.2"
+```
+
+For upstream GPUI from Zed's Git `main`:
+
+```toml
+[dependencies]
+gpui = { git = "https://github.com/zed-industries/zed", branch = "main" }
+gpui-markup = "0.5.2"
+```
+
+For GPUI Kit, use its matching GPUI APIs:
+
+```toml
+[dependencies]
+gpui-kit = "0.6.6"
+gpui-markup = "0.5.2"
+```
+
+```rust
+use gpui_kit as gpui;
+use gpui_kit::component::button::{Button, ButtonVariants};
+use gpui_kit::{IntoElement, Styled, div};
+use gpui_markup::ui;
+
+fn toolbar() -> impl IntoElement {
+    ui! {
+        div @[flex, gap_2] {
+            Button::new("save") @[primary, label: "Save"] {},
+        }
+    }
+}
+```
+
 ## Usage
 
 ```rust
 use gpui::prelude::*;
+use gpui::{FontWeight, div, px};
 use gpui_markup::ui;
 
-fn my_view(cx: &mut ViewContext<Self>) -> impl IntoElement {
+fn my_view() -> impl IntoElement {
     ui! {
-        div @[flex, flex_col, gap_2, p_4, bg: cx.theme().colors().background] {
+        div @[flex, flex_col, gap_2, p_4] {
             div @[text_size: px(24.0), font_weight: FontWeight::BOLD] {
                 "Hello, GPUI!",
             },
-            div @[text_color: cx.theme().colors().text_muted] {
+            div {
                 "A declarative way to build UIs",
             },
         }

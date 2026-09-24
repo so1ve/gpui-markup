@@ -1,7 +1,7 @@
 //! Basic syntax tests for gpui-markup.
 
 use gpui::prelude::FluentBuilder;
-use gpui::{FontWeight, InteractiveElement, Styled, deferred, div, px};
+use gpui::{FontWeight, InteractiveElement, Styled, anchored, deferred, div, px, svg};
 use gpui_markup::ui;
 
 #[test]
@@ -135,6 +135,19 @@ fn test_deferred() {
     let _ = ui! {
         deferred {
             element,
+        }
+    };
+}
+
+#[test]
+fn test_svg_in_anchored_deferred_content() {
+    let _: gpui::Deferred = ui! {
+        deferred {
+            anchored {
+                div @[flex] {
+                    svg @[path: "icon.svg", size: px(16.0)] {},
+                },
+            },
         }
     };
 }
