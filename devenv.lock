@@ -1,0 +1,105 @@
+{
+  "nodes": {
+    "devenv": {
+      "locked": {
+        "dir": "src/modules",
+        "lastModified": 1790206162,
+        "narHash": "sha256-SArqVqp220esLUtdM7v+SEwWllx7zzWuFSjOgRePhNQ=",
+        "owner": "cachix",
+        "repo": "devenv",
+        "rev": "f7591a0216026b5d68f82d66fb18ad32bbc537a6",
+        "type": "github"
+      },
+      "original": {
+        "dir": "src/modules",
+        "owner": "cachix",
+        "repo": "devenv",
+        "type": "github"
+      }
+    },
+    "nixpkgs": {
+      "inputs": {
+        "nixpkgs-src": "nixpkgs-src"
+      },
+      "locked": {
+        "lastModified": 1789506231,
+        "narHash": "sha256-vNkJbtmqyBfFhn/HnzQo4ROuoyYWuy/allqTfJb4kMY=",
+        "owner": "cachix",
+        "repo": "devenv-nixpkgs",
+        "rev": "c2f38fe7f9e04d9aadd354d380f2bd40531d9737",
+        "type": "github"
+      },
+      "original": {
+        "owner": "cachix",
+        "ref": "rolling",
+        "repo": "devenv-nixpkgs",
+        "type": "github"
+      }
+    },
+    "nixpkgs-src": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1789370336,
+        "narHash": "sha256-6RSEDHIWQtesQKWSu5qRai8L2h4KgCgMEfJHstW99G4=",
+        "owner": "NixOS",
+        "repo": "nixpkgs",
+        "rev": "c7def046b9a883d46974757852106483d741586f",
+        "type": "github"
+      },
+      "original": {
+        "owner": "NixOS",
+        "ref": "nixpkgs-unstable",
+        "repo": "nixpkgs",
+        "type": "github"
+      }
+    },
+    "ray-devenv": {
+      "flake": false,
+      "locked": {
+        "dir": "dotfiles/devenv",
+        "lastModified": 1790180781,
+        "narHash": "sha256-g9PKstiWHqScc12yzFs4F5ZSoNflPBGVhBHMkPeNNiU=",
+        "owner": "so1ve",
+        "repo": "nix-config",
+        "rev": "7b3ae12ddb05a2afe69b3353961eca61f7d03012",
+        "type": "github"
+      },
+      "original": {
+        "dir": "dotfiles/devenv",
+        "owner": "so1ve",
+        "repo": "nix-config",
+        "type": "github"
+      }
+    },
+    "root": {
+      "inputs": {
+        "devenv": "devenv",
+        "nixpkgs": "nixpkgs",
+        "ray-devenv": "ray-devenv",
+        "rust-overlay": "rust-overlay"
+      }
+    },
+    "rust-overlay": {
+      "inputs": {
+        "nixpkgs": [
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1790149037,
+        "narHash": "sha256-01WcSplVEmQt13QUZLfWez27JO+2lyYWX+yTitvkF3g=",
+        "owner": "oxalica",
+        "repo": "rust-overlay",
+        "rev": "fb058ecf6d14837ea152a3d5225ce7f88ee5cde1",
+        "type": "github"
+      },
+      "original": {
+        "owner": "oxalica",
+        "repo": "rust-overlay",
+        "type": "github"
+      }
+    }
+  },
+  "root": "root",
+  "version": 7
+}
