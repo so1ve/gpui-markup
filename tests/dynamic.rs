@@ -114,7 +114,7 @@ fn test_option_unwrap_in_child() {
     let maybe_name: Option<&str> = Some("Alice");
     let _ = ui! {
         div {
-            maybe_name.map(|n| format!("Hello, {n}")).unwrap_or_default(),
+            maybe_name.map_or_default(|n| format!("Hello, {n}")),
         }
     };
 }
