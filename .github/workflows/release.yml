@@ -3,46 +3,27 @@ name: Release
 on:
   push:
     branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  id-token: write
+  pull-requests: write
 
 jobs:
   release-pr:
-    name: Create Release PR
-    runs-on: ubuntu-latest
-    permissions:
-      pull-requests: write
-      contents: write
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-
-      - name: Install Rust
-        uses: dtolnay/rust-toolchain@stable
-
-      - name: Run release-plz
-        uses: release-plz/action@v0.5
-        with:
-          command: release-pr
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    name: Prepare release
+    concurrency:
+      group: release-plz-${{ github.ref }}
+      cancel-in-progress: false
+    uses: so1ve/workflows/.github/workflows/rust-release.yml@v1
+    with:
+      toolchain: nightly
+      command: release-pr
 
   release:
-    name: Release
-    runs-on: ubuntu-latest
-    permissions:
-      contents: write
-      id-token: write
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-
-      - name: Install Rust
-        uses: dtolnay/rust-toolchain@stable
-
-      - name: Run release-plz
-        uses: release-plz/action@v0.5
-        with:
-          command: release
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    name: Publish release
+    uses: so1ve/workflows/.github/workflows/rust-release.yml@v1
+    with:
+      toolchain: nightly
+      command: release

@@ -11,21 +11,6 @@ permissions:
 
 jobs:
   autofix:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Install Rust
-        uses: dtolnay/rust-toolchain@nightly
-        with:
-          components: rustfmt
-
-      - name: Rust Cache
-        uses: Swatinem/rust-cache@v2
-
-      - name: Run cargo fmt
-        run: cargo fmt
-
-      - uses: autofix-ci/action@7a166d7532b277f34e16238930461bf77f9d7ed8
-        with:
-          commit-message: "chore: apply automatic fixes"
+    uses: so1ve/workflows/.github/workflows/rust-autofix-ci.yml@v1
+    with:
+      toolchain: nightly
